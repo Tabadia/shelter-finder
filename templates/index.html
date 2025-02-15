@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emergency Shelter Locator</title>
+    <link rel="stylesheet" href="../static/css/styles.css">
+    <script src="../static/js/script.js" defer></script>
+</head>
+<body>
+    <header>
+        <h1>Emergency Shelter Locator</h1>
+    </header>
+    
+    <div class="main-container">
+        <div class="filter-container">
+            <h3>Filter by Type</h3>
+            <button onclick="filterShelters('All')">All</button>
+            <button onclick="filterShelters('Hospital')">Hospitals</button>
+            <button onclick="filterShelters('School')">Schools</button>
+            <button onclick="filterShelters('Home')">Homes</button>
+            <button onclick="filterShelters('Homeless Shelter')">Homeless Shelters</button>
+        </div>
+        
+        <div class="content-container">
+            <h2>Available Shelters</h2>
+            <div id="shelterContainer" class="shelter-container"></div>
+        </div>
+    </div>
+
+    <div id="popup" class="popup">
+        <div class="popup-content">
+            <span class="close" onclick="closePopup()">&times;</span>
+            <h2 id="popupTitle"></h2>
+            <p id="popupDescription"></p>
+            <p><strong>Resources:</strong> <span id="popupResources"></span></p>
+            <p><strong>AI Summary:</strong> <span id="popupAISummary">(Coming Soon)</span></p>
+            <button>RSVP</button>
+        </div>
+    </div>
+</body>
+</html>

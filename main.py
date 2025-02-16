@@ -42,11 +42,7 @@ async def get_client():
 # def add_to_queue(shelter, phone_number, num_people, name):
 
 
-class Reservation(BaseModel):
-    shelter_id: str
-    phone_number: str
-    num_people: int
-    name: str
+
 
 def add_to_queue(shelter_id, phone_number, num_people, name):
     reservation = QueueItem(
@@ -63,11 +59,11 @@ def add_to_queue(shelter_id, phone_number, num_people, name):
         raise HTTPException(status_code=400, detailE="Shelter is full")
     shelter.summary = gen_summary(shelter.name, shelter.queue, shelter.curr_cap, shelter.capacity, shelter.resources, shelter.type)
     print(update_shelter(shelter))
+    print(queue_count(shelter))
     return {"message": "Added to queue successfully"}
 
-# def separate_queue(shelter, phone_number):
-#     for q in shelter.queue:
-#         if q["phone_number"] == phone_number:
+def queue_count(shelter):
+    return len(shelter.queue)
 
 
 # should be ran on frontend clientside
@@ -81,7 +77,11 @@ def check_in(shelter, phone_number, num_people):
 
 @app.post("/reserve")
 async def reserve_shelter(reservation: Reservation):
-    #print(reservation.shelter_id, reservation.phone_number, reservation.num_people, reservation.name)
+    print(reservation.dict())
+    # print(reservation.)
+    #is phone legit
+    # if not raise http error 404
+    #print(queue_count(reservation))
     return add_to_queue(reservation.shelter_id, reservation.phone_number, reservation.num_people, reservation.name)
 
 
@@ -104,8 +104,6 @@ async def read_shelter(shelter_id: str):
 
 @app.post("/shelters/", response_model=Shelter)
 async def create_shelter(shelter: ShelterPost):
-    #update shelter.summary
-    shelter.summary = gen_summary(shelter.name, shelter.queue, shelter.curr_cap, shelter.capacity, shelter.resources, shelter.type)
     return post_shelter(shelter)
 
 # @app.put("/shelters/{shelter_id}", response_model=Shelter)

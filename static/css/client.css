@@ -6,23 +6,25 @@ body {
     padding: 0;
 }
 
+/* Center main content */
 main {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100%;
+    height: 100vh; 
 }
-
 
 /* Adjust header layout */
 header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 50px 20px; 
+    padding: 20px;
     position: relative;
+    background-color: #e0e0e0; 
 }
 
+/* Logo Styling */
 .logo-container {
     display: flex;
     justify-content: center;
@@ -34,6 +36,7 @@ header {
     max-width: 180px;
     height: auto;
 }
+
 /* Container */
 .login-container {
     width: 100%;
@@ -85,11 +88,11 @@ h2 {
     color: #6a11cb;
 }
 
-/* Buttons */
-button {
+/* Buttons (Login & Signup) */
+.auth-button {
     width: 100%;
     padding: 12px;
-    background-color: #FF6961;
+    background-color: #FF6961; /* Consistent color */
     color: white;
     border: none;
     border-radius: 5px;
@@ -98,11 +101,11 @@ button {
     transition: 0.3s;
 }
 
-button:hover {
+.auth-button:hover {
     background-color: #e04e2a;
 }
 
-/* Signup Text */
+/* Signup & Login Text Links */
 .signup-text {
     margin-top: 15px;
     font-size: 14px;
@@ -119,7 +122,7 @@ button:hover {
 }
 
 .signup-text a:visited {
-    color: #FF6961;
+    color: #6a11cb; 
 }
 
 /* Responsive Adjustments */
@@ -142,4 +145,45 @@ button:hover {
     padding: 10px;
     border-radius: 5px;
     border: 1px solid #ff3b3b;
+}
+
+#addShelterForm {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+    max-width: 400px;
+    margin: 20px auto;
+}
+
+#addShelterForm label {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+#addShelterForm input,
+#addShelterForm select,
+#addShelterForm textarea {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+#addShelterForm button[type="submit"] {
+    padding: 10px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+#addShelterForm button[type="submit"]:hover {
+    background-color: #45a049;
 }

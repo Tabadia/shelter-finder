@@ -7,25 +7,31 @@ body {
     background-color: #f4f4f4;
 }
 
-/* Adjust header layout */
+/* Header Styling */
 .header {
-    background: #FF6961; /* Keep the existing red background */
+    background: #d9d9d9; 
     width: 100%;
-    max-width: 1200px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 15px 20px;
-    border-bottom: 2px solid #ddd; /* Light gray divider */
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+    box-sizing: border-box;
 }
 
-.top-bar {
-    background-color: #f7f3e9; /* Light beige similar to SCU */
-    padding: 10px 0;
-    width: 100%;
+/* Ensure the logo is visible */
+.logo-container {
     display: flex;
-    justify-content: center;
+    align-items: center;
+    margin-left: 10px; 
 }
+
+.logo-container img {
+    height: 50px; /* Adjust size */
+    width: auto;
+    display: block;
+}
+
 .client-switch button {
     background-color: #d9534f;
     color: white;

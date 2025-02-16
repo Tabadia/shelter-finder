@@ -4,7 +4,13 @@ from typing import Optional, List
 class Resources(BaseModel):
     first_aid: bool
     food: bool
-    
+
+
+class Reservation(BaseModel):
+    shelter_id: str
+    phone_number: str
+    num_people: int
+    name: str
     
 class QueueItem(BaseModel):
     name: str
@@ -27,6 +33,21 @@ class Shelter(BaseModel):
     summary: str
     # time: int
     
+class ShelterPost(BaseModel):
+    ShelterID: Optional[str]
+    name: str
+    address: str
+    capacity: int
+    curr_cap: int
+    queue: Optional[List[List[str]]] = []
+    desc: str
+    type: str
+    curr_cap: Optional[int] = 0
+    verif: Optional[bool]
+    resources: str
+    summary: Optional[str]
+    
+    owner_username: str
 
 class Client(BaseModel):
     id: str
@@ -39,14 +60,6 @@ class User(BaseModel):
     username: str  
     password: str
     shelter_ids: List[str]
-
-class Reservation(BaseModel):
-    id: int
-    user_id: int # tie this into a user
-    shelter_id: int
-    start_date: str
-    end_date: str
-    f_size: int
     
 class ClientPost(BaseModel):
     id: Optional[str]
@@ -59,16 +72,6 @@ class ClientLogin(BaseModel):
     username: str
     password: str
 
-class ShelterPost(BaseModel):
-    ShelterID: Optional[str]
-    name: str
-    address: str
-    capacity: int
-    queue: Optional[List[List[str]]] = []
-    desc: str
-    type: str
-    verif: Optional[bool]
-    resources: str
 
 class ShelterUpdate(BaseModel):
     name: Optional[str] = None

@@ -41,15 +41,12 @@ def get_my_shelters(owner_username: str):
     print('cc', response)
     item = response.get('Item', {})
     if item:
-        print('item')
         ret = []
         p = item.get('shelters_ids', [])
-        print('p', p)
         for x in p:
             c = get_shelter_by_id(x)
             print('c', c)
             ret.append(c)
-        print('get my', ret)
         return ret
     else:
         return []
@@ -73,22 +70,31 @@ def verify(s: ShelterPost):
 def post_shelter(shelter: ShelterPost):
     shelter.ShelterID = str(uuid.uuid4())
     shelter.verif = verify(shelter)
-    print('shelter', shelter)
+    shelter.summary = gen_summary(shelter.name, shelter.queue, shelter.curr_cap, shelter.capacity, shelter.resources, shelter.type)
+    
+    # owner_username = shelter.owner_username
+    owner_username = 'bobjoe'
+    del shelter.owner_username
+    # print('shelter', shelter)
     shelter_table.put_item(Item=shelter.dict())
     # add shelter.ShelterID to client table
+    client = get_user_by_username(owner_username)
+    if 'shelters_ids' not in client:
+        client['shelters_ids'] = []
+    user = update_user(owner_username, {'shelters_ids': client['shelters_ids'] + [shelter.ShelterID]})
     # client_table.update_item(
     #     Key={'username': clientUsers},
     #     UpdateExpression='SET #shelter_id = :shelter_id',
     #     ExpressionAttributeNames={'#shelter_id': 'ShelterID'},
     #     ExpressionAttributeValues={':shelter_id': shelter.ShelterID}
     # )
+    print('user', user)
     return shelter
 
 def update_shelter(shelter):
-    # shelter_id = shelter['ShelterID']
     shelter.summary = gen_summary(shelter.name, shelter.queue, shelter.curr_cap, shelter.capacity, shelter.resources, shelter.type)
     response = shelter_table.put_item(
-        Item=shelter
+        Item=shelter.dict()
     )
     return response
 

@@ -72,3 +72,26 @@ document.addEventListener("DOMContentLoaded", async function () {
     }
     displayShelters();
 });
+
+
+document.getElementById('addShelterForm').addEventListener('submit', function(event) {
+    event.preventDefault();
+    // Here you would send the form data to your backend to create a new shelter
+    const formData = new FormData(this);
+    const username = localStorage.getItem('username');
+    formData.append('owner_username', username);
+    console.log('Form data:', JSON.stringify(Object.fromEntries(formData)));
+    fetch('/shelters/', {
+        method: 'POST',
+        body: JSON.stringify(Object.fromEntries(formData)),
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log('Shelter added:', data);
+        // window.location.href = '/'; // Redirect back to shelter list
+    })
+    .catch(error => console.error('Error adding shelter:', error));
+});

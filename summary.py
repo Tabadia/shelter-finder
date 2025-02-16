@@ -41,4 +41,4 @@ def gen_summary(shelter_name, queue, curr_cap, capacity, resources, type):
         messages=messages
     )
 
-    return response['output']['message']['content']
+    return response['output']['message']['content'][0]['text']

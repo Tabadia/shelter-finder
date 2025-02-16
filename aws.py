@@ -1,12 +1,14 @@
 import uuid
 
 import boto3
+from boto3.dynamodb.conditions import Key
+
 from dotenv import load_dotenv
 import os
 
 load_dotenv()
 
-from models import Shelter, User, Reservation
+from models import Shelter, ShelterPost, User, Reservation
 
 # Initialize DynamoDB resource
 session = boto3.Session(
@@ -19,11 +21,12 @@ dynamodb = session.resource('dynamodb')
 
 # Specify the table names
 shelter_table_name = 'Shelters'
-user_table_name = 'Users'
+# user_table_name = 'Users'
+client_table_name = 'clients'
 reservation_table_name = 'Reservations'
 
 shelter_table = dynamodb.Table(shelter_table_name)
-user_table = dynamodb.Table(user_table_name)
+user_table = dynamodb.Table(client_table_name)
 reservation_table = dynamodb.Table(reservation_table_name)
 
 # Shelter Methods
@@ -31,12 +34,35 @@ def get_all_shelters():
     response = shelter_table.scan()
     return response.get('Items', [])
 
+def get_my_shelters(owner_id: int):
+    response = user_table.get_item(Key={'id': owner_id})
+    item = response.get('Item', {})
+    if item:
+        ret = []
+        p = item.get('shelters_ids', [])
+        for x in p:
+            ret.append(get_shelter_by_id(x))
+        return ret
+    else:
+        return []
+
+
 def get_shelter_by_id(shelter_id):
     response = shelter_table.get_item(Key={'ShelterID': shelter_id})
     return response.get('Item', {})
+    
 
-def post_shelter(shelter: Shelter):
+
+def post_shelter(shelter: ShelterPost):
+    shelter.ShelterID = str(uuid.uuid4())
     shelter_table.put_item(Item=shelter.dict())
+    # add shelter.ShelterID to client table
+    # user_table.update_item(
+    #     Key={'username': clientUsers},
+    #     UpdateExpression='SET #shelter_id = :shelter_id',
+    #     ExpressionAttributeNames={'#shelter_id': 'ShelterID'},
+    #     ExpressionAttributeValues={':shelter_id': shelter.ShelterID}
+    # )
     return shelter
 
 def update_shelter(shelter_id, updates):
@@ -59,45 +85,69 @@ def update_shelter(shelter_id, updates):
     )
     return get_shelter_by_id(shelter_id)
 
+# def put_shelter_by_id(shelter):
+#     shelter_id = shelter['ShelterID']
+#     response = table.put_item(
+#         Item=shelter
+#     )
+#     return response
+
+
 def delete_shelter(shelter_id):
     shelter_table.delete_item(Key={'ShelterID': shelter_id})
 
 # User Methods
+
+
+
 def get_all_users():
     response = user_table.scan()
     return response.get('Items', [])
 
-def get_user_by_id(user_id):
-    response = user_table.get_item(Key={'id': user_id})
+def get_user_by_username(username):
+    response = user_table.get_item(Key={'username': username})  
     return response.get('Item', {})
 
 def post_user(user: User):
-    user_table.put_item(Item=user.dict())
+    user_item = user.model_dump()  
+    print("User Item:", user_item)  
+
+    if 'username' not in user_item:
+        raise ValueError("Error: 'username' is missing from user_item!")
+
+    existing_user = get_user_by_username(user_item['username'])
+    if existing_user:
+        raise ValueError(f"User with username {user_item['username']} already exists.")
+
+    user_table.put_item(Item=user_item)
     return user
 
-def update_user(user_id, updates):
-    update_expression = 'set '
+
+def update_user(username, updates):
+    update_expression = 'SET '
     expression_attribute_values = {}
-    attribute_names = {}
+    expression_attribute_names = {}
 
     for key, value in updates.items():
         update_expression += f'#{key} = :{key}, '
         expression_attribute_values[f':{key}'] = value
-        attribute_names[f'#{key}'] = key
+        expression_attribute_names[f'#{key}'] = key
 
-    update_expression = update_expression[:-2]  # Remove trailing comma and space
+    update_expression = update_expression.rstrip(', ')
 
     user_table.update_item(
-        Key={'id': user_id},
+        Key={'username': username},  
         UpdateExpression=update_expression,
         ExpressionAttributeValues=expression_attribute_values,
-        ExpressionAttributeNames=attribute_names
+        ExpressionAttributeNames=expression_attribute_names
     )
-    return get_user_by_id(user_id)
+    return get_user_by_username(username)
 
-def delete_user(user_id):
-    user_table.delete_item(Key={'id': user_id})
+def delete_user(username):
+    user_table.delete_item(Key={'username': username}) 
 
+ 
+# print(get_all_users())
 # Reservation Methods
 def get_all_reservations():
     response = reservation_table.scan()

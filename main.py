@@ -3,10 +3,10 @@ from fastapi import FastAPI, HTTPException
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from fastapi.responses import FileResponse
-from models import Shelter, User, Reservation, ShelterUpdate, UserUpdate, ReservationUpdate, Location
+from models import Shelter, User, Reservation, ShelterPost, ShelterUpdate, UserUpdate, ReservationUpdate, Location
 from data import shelters, users, reservations
-from aws import get_all_shelters
-from aws import get_all_shelters, get_shelter_by_id, post_shelter, get_user_by_id, get_all_users, post_user, \
+from distance import geocode, get_radar_time
+from aws import get_all_shelters, get_my_shelters, get_shelter_by_id, post_shelter, get_all_users, post_user, \
     get_all_reservations, get_reservation_by_id, post_reservation
 # from user.distance import reverse_geocode
 
@@ -17,18 +17,6 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 
 address = ""
 
-@app.get("/")
-async def read_root():
-    return FileResponse("templates/index.html")
-
-@app.get("/client")
-async def get_client():
-    return FileResponse("templates/client.html")
-
-# Dummy in-memory data store
-shelter_data = shelters
-user_data = users
-reservation_data = reservations
 
 
 # Shelter Endpoints
@@ -37,13 +25,13 @@ async def read_root():
     return FileResponse("templates/index.html")
 
 
+@app.get("/client-login")
+async def get_client():
+    return FileResponse("templates/client-login.html")
+
 @app.get("/client")
 async def get_client():
     return FileResponse("templates/client.html")
-
-@app.get("/client-main")
-async def get_client():
-    return FileResponse("templates/client-main.html")
 
 @app.get("/add-shelter")
 async def get_client():
@@ -51,12 +39,19 @@ async def get_client():
 
 
 
-
+@app.post("/reserve/{shelter_id},{phone_number},{num_people}")
+async def reserve_shelter(shelter_id: int, phone_number: int, num_people: int):
+    return {"message": "Reservation created successfully"}
 
 # Shelter Endpoints
-# @app.get("/shelters/", response_model=List[Shelter])
-# async def read_shelters():
-#     return get_all_shelters()
+@app.get("/shelters/", response_model=List[Shelter])
+async def read_shelters():
+    return get_all_shelters()
+
+@app.get("/shelters/owner/{owner_id}", response_model=List[Shelter])
+async def read_shelters(owner_id: int):
+    print("in shelters onwer:", owner_id)
+    return get_my_shelters(owner_id)
 
 @app.get("/shelters/{shelter_id}", response_model=Shelter)
 async def read_shelter(shelter_id: str):
@@ -66,7 +61,7 @@ async def read_shelter(shelter_id: str):
     return ret
 
 @app.post("/shelters/", response_model=Shelter)
-async def create_shelter(shelter: Shelter):
+async def create_shelter(shelter: ShelterPost):
     return post_shelter(shelter)
 
 @app.put("/shelters/{shelter_id}", response_model=Shelter)
@@ -83,12 +78,12 @@ async def delete_shelter(shelter_id: str):
 async def read_users():
     return get_all_users()
 
-@app.get("/users/{user_id}", response_model=User)
-async def read_user(user_id: int):
-    ret = get_user_by_id(user_id)
-    if not ret:
-        raise HTTPException(status_code=404, detail="User not found")
-    return ret
+# @app.get("/users/{user_id}", response_model=User)
+# async def read_user(user_id: int):
+#     ret = get_user_by_id(user_id)
+#     if not ret:
+#         raise HTTPException(status_code=404, detail="User not found")
+#     return ret
 
 @app.post("/users/", response_model=User)
 async def create_user(user: User):
@@ -144,10 +139,11 @@ async def get_headcount(shelter_id: int):
 @app.get("/location/{lat},{lon}")
 async def get_location(lat: float, lon: float):
     print(lat, lon)
-    #address = reverse_geocode(lat, lon)
     shelter_data = get_all_shelters()
+
+    for s in shelter_data:
+        client_lat, client_lon = geocode(s["address"])
+        distance = get_radar_time()
     print(shelter_data)
     return {"shelters": shelter_data}
 
-#def get_distance(user_address, shelter_address):
-    #api call to get distance from user address and shelter address

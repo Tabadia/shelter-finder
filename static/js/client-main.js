@@ -1,73 +1,61 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add New Shelter</title>
-    <style>
-        label {
-            display: block;
-            margin-bottom: 10px;
+async function fetchMyShelters(owner_id) {
+    try {
+        const response = await fetch(`/shelters/owner/${owner_id}`);
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
         }
-        input, textarea {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 20px;
-            border: 1px solid #ccc;
-        }
-        button[type="submit"] {
-            padding: 10px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        button[type="submit"]:hover {
-            background-color: #0056b3;
-        }
-    </style>
-</head>
-<body>
+        const data = await response.json();
+            console.log("shelters:", data);
+        updateShelters(data);  
+        return data;
+    } catch (error) {
+      console.error("Error fetching location:", error);
+    }
+}
 
-<h1>Add New Shelter</h1>
 
-<form id="addShelterForm">
-    <label for="name">Shelter Name:</label>
-    <input type="text" id="name" name="name" required>
+document.addEventListener("DOMContentLoaded", async function () {
+    console.log("DOM loaded");
+    const shelters = await fetchMyShelters(1231234);
+    console.log(shelters);
+    
+    const shelterContainer = document.getElementById("shelterContainer");
 
-    <label for="address">Address:</label>
-    <input type="text" id="address" name="address" required>
+    function displayShelters(filter) {
+        shelterContainer.innerHTML = "";
+        shelters = Object.values(shelters);
+        console.log(shelters);
+        shelters.filter(shelter => filter === 'All' || shelter.type === filter)
+            .sort((a, b) => parseFloat(a.distance) - parseFloat(b.distance))
+            .forEach(shelter => {
+                shelter = shelter[0];
+                console.log(shelter.type);
+                const shelterBox = document.createElement("div");
+                shelterBox.classList.add("shelter-box");
+                shelterBox.innerHTML = `
+                    <div class="shelter-content">
+                        <div class="shelter-info">
+                            <h3>${shelter.name}</h3>
+                            <p><strong>Distance:</strong> ${shelter.distance}</p>
+                            <p><strong>People:</strong> ${shelter.people}</p>
+                            <p><strong>Address:</strong> ${shelter.address}</p>
+                            <p><strong>Description:</strong> ${shelter.description}</p>
+                            ${shelter.verif ? '<span class="verified-badge">Verified</span>' : ''}
+                            <button class="more-info" 
+                            onclick="showDetails('${shelter.name}', '${shelter.distance}', '${shelter.people}', '${shelter.address}', '${shelter.description}', '${shelter.resources}')">
+                            More Info
+                            </button>
+                            <button class="rsvp" onclick="rsvpPopup()">Reserve</button>
+                        </div>
+                        <div class="shelter-image">
+                        <img src="../static/images/${shelter.image}" alt="${shelter.type}">  
+                        </div>
+                    </div>
+                `;
+                shelterContainer.appendChild(shelterBox);
+            });
+    }
 
-    <label for="capacity">Capacity:</label>
-    <input type="number" id="capacity" name="capacity" required>
-
-    <label for="description">Description:</label>
-    <textarea id="description" name="description"></textarea>
-
-    <button type="submit">Add Shelter</button>
-</form>
-
-<script>
-    document.getElementById('addShelterForm').addEventListener('submit', function(event) {
-        event.preventDefault();
-        // Here you would send the form data to your backend to create a new shelter
-        const formData = new FormData(this);
-        fetch('/shelters/', {
-            method: 'POST',
-            body: JSON.stringify(Object.fromEntries(formData)),
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            console.log('Shelter added:', data);
-            window.location.href = 'index.html'; // Redirect back to shelter list
-        })
-        .catch(error => console.error('Error adding shelter:', error));
-    });
-</script>
-
-</body>
-</html>
+    window.filterShelters = displayShelters;
+    displayShelters('All');
+});

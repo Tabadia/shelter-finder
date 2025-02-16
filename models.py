@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import Optional
+from typing import Optional, List
 
 class Resources(BaseModel):
     first_aid: bool
@@ -12,26 +12,26 @@ class Shelter(BaseModel):
     name: str
     address: str
     capacity: int
-    queue: int
+    # queue: int
     desc: str
-    verif: bool
+    verif: bool = False
     type: str
-    distance: float
     resources: str
-    # time: int
-
+    
 
 class Client(BaseModel):
+    id: int
     username: str
     password: str
-    shelters_ids: list[str]
+    shelters_ids: List[str]
     lat: float
     long: float
 
 class User(BaseModel):
     id: int
-    name: str
-    email: str
+    username: str  
+    password: str
+    shelter_ids: List[str]
 
 class Reservation(BaseModel):
     id: int
@@ -41,7 +41,19 @@ class Reservation(BaseModel):
     end_date: str
     f_size: int
     
-    
+
+
+class ShelterPost(BaseModel):
+    ShelterID: Optional[str]
+    name: str
+    address: str
+    capacity: int
+    # queue: int
+    desc: str
+    type: str
+    verif: bool = False
+    resources: str
+    owner_id: int
 
 class ShelterUpdate(BaseModel):
     name: Optional[str] = None

@@ -3,13 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Emergency Shelter Locator</title>
+    <title>Sheltr </title>
+    <link rel="icon" type="image/x-icon" href="../static/images/favicon.ico">
     <link rel="stylesheet" href="../static/css/styles.css">
     <script src="../static/js/script.js" defer></script>
 </head>
 <body>
     <header>
-        <h1>Emergency Shelter Locator</h1>
+        <div class="logo-container"> 
+            <img src="../static/images/sheltrlogo.png" alt="" srcset="">
+            <!-- <img src="https://via.placeholder.com/100" alt="Placeholder Logo"> -->
+        </div> 
+        <div class="client-switch">
+            <button onclick="switchToClient()">Client Log-In</button>
+        </div>
+        <!-- <h1>SHELTR</h1> -->
     </header>
     
     <div class="main-container">
@@ -35,7 +43,23 @@
             <p id="popupDescription"></p>
             <p><strong>Resources:</strong> <span id="popupResources"></span></p>
             <p><strong>AI Summary:</strong> <span id="popupAISummary">(Coming Soon)</span></p>
-            <button>RSVP</button>
+            <button>Reserve</button>
+        </div>
+    </div>
+
+    <div id="popupRSVP" class="popup">
+        <div class="popup-content">
+            <span class="close" onclick="closeRSVPPopup()">&times;</span>
+            <h2>Reserve a Spot</h2>
+            <form id="rsvpForm">
+                <label for="phoneNumber">Phone Number:</label>
+                <input type="tel" id="phoneNumber" name="phoneNumber" required>
+                
+                <label for="numPeople">Number of People:</label>
+                <input type="number" id="numPeople" name="numPeople" required min="1">
+                
+                <button type="submit" onclick="submitRSVP()">Reserve</button>
+            </form>
         </div>
     </div>
 </body>

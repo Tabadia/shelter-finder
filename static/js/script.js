@@ -45,7 +45,6 @@ function updateShelters(shelters) {
     const popupDescription = document.getElementById("popupDescription");
     const popupResources = document.getElementById("popupResources");
     const popupAISummary = document.getElementById("popupAISummary");
-    const popupRSVP = document.getElementById("popupRSVP");
     const popupClose = document.querySelector(".close");
 
     function displayShelters(filter) {
@@ -68,11 +67,14 @@ function updateShelters(shelters) {
                             <p><strong>Address:</strong> ${shelter.address}</p>
                             <p><strong>Description:</strong> ${shelter.description}</p>
                             ${shelter.verif ? '<span class="verified-badge">Verified</span>' : ''}
-                            <button class="more-info" onclick="showDetails('${shelter.type}', '${shelter.description}', '${shelter.resources}')">More Info</button>
-                            <button class="rsvp">RSVP</button>
+                            <button class="more-info" 
+                            onclick="showDetails('${shelter.name}', '${shelter.distance}', '${shelter.people}', '${shelter.address}', '${shelter.description}', '${shelter.resources}')">
+                            More Info
+                            </button>
+                            <button class="rsvp" onclick="rsvpPopup()">Reserve</button>
                         </div>
                         <div class="shelter-image">
-                        <img src="../static/images/${shelter.image}" alt="${shelter.type}">
+                        <img src="../static/images/${shelter.image}" alt="${shelter.type}">  
                         </div>
                     </div>
                 `;
@@ -83,20 +85,23 @@ function updateShelters(shelters) {
     window.filterShelters = displayShelters;
     displayShelters('All');
 
-    window.showDetails = function(title, description, resources) {
-        popupTitle.innerText = title;
-        popupDescription.innerText = description;
-        popupResources.innerText = resources;
+    window.showDetails = function(name, distance, people, address, description, resources) {
+        popupTitle.innerText = name;
+        popupDescription.innerText = `Description: ${description}`;
+        popupResources.innerText = `Resources: ${resources}`;
         popupAISummary.innerText = "(Coming Soon)";
-        popupRSVP.setAttribute("onclick", `rsvpShelter('${title}', '${address}')`);
+        
         popup.style.display = "flex";
-        popupClose.style.opacity = "1";
-        popupClose.style.transition = "opacity 0.5s ease-in-out";
-        popupClose.style.display = "block";
-    }
-    window.rsvpShelter = function(type, address) {
+        popupClose.style.display = "block"; 
+    };
+    
+    
+    window.rsvpShelter = function(button) {
+        const type = button.getAttribute("data-type");
+        const address = button.getAttribute("data-address");
         alert(`You have successfully RSVP'd to ${type} at ${address}.`);
-    }
+    };
+    
     window.closePopup = function() {
         popup.style.display = "none";
     }
@@ -113,7 +118,8 @@ async function fetchLocation(lat, lon) {
         updateShelters(data);  
         return data;
     } catch (error) {
-      console.error("Error fetching location:", error);
+        console.error("Error fetching location:", error);
+        alert("Error fetching location. Please enable location services.");
     }
   }
 
@@ -134,6 +140,27 @@ document.addEventListener("DOMContentLoaded", function () {
     );
 });
 
+function switchToClient() {
+    window.location.href = "/client"; // Adjust the path based on your actual client-side URL
+}
 
+const popupRSVP = document.getElementById("popupRSVP");
+// popupRSVP.style.display = "none";
 
+function rsvpPopup() {
+    popupRSVP.style.display = "block";
+}
+
+function submitRSVP() {
+    const phoneNumber = document.getElementById("phoneNumber").value;
+    const numPeople = document.getElementById("numPeople").value;
+    alert("You have successfully RSVP'd to this shelter. phoneNumber: " + phoneNumber + ", numPeople: " + numPeople + "}");
+    popupRSVP.style.display = "none";
+
+    // post request
+}
+
+function closeRSVPPopup() {
+    popupRSVP.style.display = "none";
+}
 

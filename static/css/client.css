@@ -73,3 +73,26 @@ button:hover {
     object-fit: cover;
     border-radius: 8px;
 }
+
+/* Header */
+header {
+    background: #FF6961;
+    color: white;
+    padding: 20px;
+    font-size: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+/* Logo Styling */
+.logo-container {
+    position: absolute;
+    left: 20px;
+}
+
+.logo-container img {
+    height: 50px; /* Adjust the size of the logo */
+    width: auto;
+}

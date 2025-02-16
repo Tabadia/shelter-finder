@@ -3,74 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Shelters</title>
+    <link rel="icon" type="image/x-icon" href="../static/images/favicon.ico">
+    <title>Client Main</title>
     <link rel="stylesheet" href="../static/css/client.css">
 </head>
 <body>
-    <div class="container">
-        <ul id="shelterList" class="shelter-list"></ul>
-
-<button id="addShelterButton" class="add-shelter-button">Add New Shelter</button>
-
-<script>
-    // Example data (replace with actual data fetched from backend)
-    const shelters = [
-        { id: 1, name: "Shelter 1", address: "123 Main St" },
-        { id: 2, name: "Shelter 2", address: "456 Elm St" },
-    ];
-
-    // Function to display shelters
-    function displayShelters(shelters) {
-        const shelterList = document.getElementById('shelterList');
-        shelterList.innerHTML = '';
-
-        shelters.forEach(shelter => {
-            const li = document.createElement('li');
-            li.textContent = `${shelter.name} - ${shelter.address}`;
-            shelterList.appendChild(li);
-        });
-    }
-
-    // Display shelters on page load
-    displayShelters(shelters);
-
-    // Add event listener to add shelter button
-    document.getElementById('addShelterButton').addEventListener('click', function() {
-        // Redirect to form to add new shelter
-        window.location.href = 'add-shelter.html';
-    });
-</script>
-
+    <div class="content-container">
+        <h2>My Shelters</h2>
+        <div id="shelterContainer" class="shelter-container"></div>
     </div>
     <script src="../static/js/client-main.js"></script>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-        }
-        .shelter-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-        .shelter-list li {
-            padding: 10px;
-            border-bottom: 1px solid #ccc;
-        }
-        .shelter-list li:last-child {
-            border-bottom: none;
-        }
-        .add-shelter-button {
-            margin-top: 20px;
-            padding: 10px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        .add-shelter-button:hover {
-            background-color: #0056b3;
-        }
-    </style>
 </body>
 </html>

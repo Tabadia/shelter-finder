@@ -1,190 +1,63 @@
 # Google Maps Distance Matrix API
-from geopy.geocoders import Nominatim
+from geopy.geocoders import nominatim
 from geopy.exc import GeocoderTimedOut, GeocoderUnavailable
 from geopy.location import Location
 import requests
 import os
 import googlemaps
 import json
+from datetime import datetime, timedelta
+from dotenv import load_dotenv
+import urllib.parse
 
-def reverse_geocode(latitude: float, longitude: float, max_retries: int = 3) -> str | None:
-    geolocator = Nominatim(user_agent="reverse_geocoding")
+load_dotenv()
+API_KEY = os.getenv("RADAR_API_KEY")
 
-    for attempt in range(max_retries):
-        try:
-            location: Location | None = geolocator.reverse(f"{latitude}, {longitude}", exactly_one=True, timeout=10)
-            if location:
-                return location.address
-            else:
-                return None
-        except (GeocoderTimedOut, GeocoderUnavailable):
-            if attempt < max_retries - 1:
-                continue  # Retry if not the last attempt
-            else:
-                return None  # Return None if max retries reached
-        except Exception as e:
-            print(f"An unexpected error occurred: {e}")
-            return None
+if not API_KEY:
+   raise ValueError("API_KEY not found")
 
-def get_travel_time_matrix(api_url, api_key, origin, destinations, travel_time=10800):
-    """
-    Fetches travel time and distance from the Travel Time Distance Matrix API.
+def geocode(address):
+    url = f'https://nominatim.openstreetmap.org/search?q={urllib.parse.quote(address)}&format=json'
 
-    Parameters:
-    - api_url (str): The API endpoint.
-    - api_key (str): The API key for authentication.
-    - origin (tuple): Latitude and longitude of the origin (lat, lng).
-    - destinations (list): List of tuples containing lat, lng for each destination.
-    - travel_time (int): Maximum travel time in seconds (default 10800 seconds).
-
-    Returns:
-    - dict: The API response containing travel times and distances.
-    """
-
-    # Build the request payload
-    request_payload = {
-        "arrival_searches": {
-            "one_to_many": [
-                {
-                    "id": "Example Search",
-                    "departure_location_id": "Origin",
-                    "arrival_location_ids": [f"Destination {i+1}" for i in range(len(destinations))],
-                    "transportation": {"type": "driving"},
-                    "travel_time": travel_time,
-                    "arrival_time_period": "weekday_morning",
-                    "properties": ["travel_time", "distance"]
-                }
-            ]
-        },
-        "locations": [
-            {
-                "id": "Origin",
-                "coords": {"lat": origin[0], "lng": origin[1]}
-            }
-        ] + [
-            {
-                "id": f"Destination {i+1}",
-                "coords": {"lat": dest[0], "lng": dest[1]}
-            } for i, dest in enumerate(destinations)
-        ]
+    headers = {
+        "User-Agent": "YourAppName/1.0 (your@email.com)"  # Replace with your app info
     }
 
-    headers = {"Content-Type": "application/json", "X-API-Key": api_key}
+    response = requests.get(url, headers=headers)
 
-    # Send the request
-    response = requests.post(api_url, headers=headers, data=json.dumps(request_payload))
+    if response.status_code != 200 or response.text.strip() == "":
+        print(f"Error: API request failed with status {response.status_code}")
+        print("Response Text:", response.text)
+    else:
+        data = response.json()
+        return data[0]["lat"],  data[0]["lon"]
 
-    # Check for errors
+
+
+def get_radar_time(user_lat, user_lon, shelter_address):
+    shelter_lat, shelter_lon = geocode(shelter_address)
+
+    if shelter_lat is None or shelter_lon is None:
+        return "Error: Could not geocode shelter address."
+
+    # Construct Radar.io API request
+    API_URL = "https://api.radar.io/v1/route/match"
+    request_url = f"{API_URL}?origin={user_lat},{user_lon}&destination={shelter_lat},{shelter_lon}&mode=car"
+
+    headers = {"Authorization": f"Bearer {API_KEY}"}
+    response = requests.get(request_url, headers=headers)
+
     if response.status_code != 200:
-        raise Exception(f"API request failed: {response.status_code}, {response.text}")
+        return f"Error {response.status_code}: {response.text}"
 
-    return response.json()
-
-# Example usage
-if __name__ == "__main__":
-    API_URL = "https://api.traveltime.com/v4/time-distance"  # Replace with actual API URL
-    API_KEY = "your_api_key_here"  # Replace with your actual API key
-    origin_coords = (54.238911, -0.397567)
-    destination_coords = [
-        (54.24424722, -0.407544543),
-        (54.35384, -0.434984),
-        (53.99283, -0.519234)
-    ]
-
-    result = get_travel_time_matrix(API_URL, API_KEY, origin_coords, destination_coords)
-    print(json.dumps(result, indent=2))
-
-
-"""
-def get_driving_time(origin, destination):
-    api_key = os.getenv('GMA_KEY')
-    gmaps = googlemaps.Client(key=api_key)
-
-    if not api_key:
-        return "Error: GOOGLE_MAPS_API_KEY environment variable not set!"
-
-    url = "https://maps.googleapis.com/maps/api/distancematrix/json"  # Correct Distance Matrix API URL
-    params = {
-        "origins": origin,
-        "destinations": destination,
-        "mode": "driving",
-        "key": api_key
-    }
-
-    response = requests.get(url, params=params)
     data = response.json()
 
-    if data["status"] == "OK":
-        element = data["rows"][0]["elements"][0]
-        if element["status"] == "OK":
-            duration_seconds = element["duration"]["value"]
-            duration_minutes = duration_seconds / 60
-            return f"Estimated driving time: {duration_minutes:.2f} minutes"
-        else:
-            return f"Error fetching driving time: {element['status']}"
-    else:
-        print(f"Error response: {data}")  # Debugging response
-        return f"Error fetching data: {data.get('error_message', data['status'])}"
+    try:
+        # Extract travel time (seconds) and convert to minutes
+        travel_time_seconds = data["distance"]["value"] / 25  # Approximate car speed 25 m/s
+        travel_time_minutes = round(travel_time_seconds / 60)
 
-if __name__ == "__main__":
-    origin_address = "1600 Amphitheatre Parkway, Mountain View, CA"
-    destination_address = "1 Infinite Loop, Cupertino, CA"
+        return f"Estimated travel time: {travel_time_minutes} minutes"
 
-    print("Fetching driving time...")
-    driving_time = get_driving_time(origin_address, destination_address)
-    print(driving_time)#Google Maps Distance Matrix API
-from geopy.geocoders import Nominatim
-from geopy.exc import GeocoderTimedOut, GeocoderUnavailable
-from geopy.location import Location
-import ssl
-import certifi
-import requests
-import os
-
-def reverse_geocode(latitude: float, longitude: float, max_retries: int = 3) -> str | None:
-    geolocator = Nominatim(user_agent="reverse_geocoding")
-
-    for attempt in range(max_retries):
-        try:
-            location: Location | None = geolocator.reverse(f"{latitude}, {longitude}", exactly_one=True, timeout=10)
-            if location:
-                return location.address
-            else:
-                return None
-        except (GeocoderTimedOut, GeocoderUnavailable):
-            if attempt < max_retries - 1:
-                continue  # Retry if not the last attempt
-            else:
-                 return None # Return None if max retries reached
-
-        except Exception as e:
-            print(f"An unexpected error occurred: {e}")
-            return None
-
-def get_driving_time(origin, destination):
-    url = "https://maps.googleapis.com/maps/api/directions/json"
-    params = {
-        "origin": origin,
-        "destination": destination,
-        "mode": "driving",
-        "key": os.getenv('GOOGLE_MAPS_API_KEY')
-    }
-
-    response = requests.get(url, params=params)
-    data = response.json()
-
-    if data["status"] == "OK":
-        duration_seconds = data["routes"][0]["legs"][0]["duration"]["value"]
-        duration_minutes = duration_seconds / 60
-        return f"Estimated driving time: {duration_minutes:.2f} minutes"
-    else:
-        return f"Error fetching directions: {data['status']}"
-
-if __name__ == "__main__":
-    origin_address = "1600 Amphitheatre Parkway, Mountain View, CA"
-    destination_address = "1 Infinite Loop, Cupertino, CA"
-    
-    print("x")
-    driving_time = get_driving_time(origin_address, destination_address)
-    print(driving_time)
-"""
+    except KeyError:
+        return "Error: No route data found in response."

@@ -85,6 +85,11 @@ def check_in(shelter, phone_number, num_people):
 @app.post("/reserve")
 async def reserve_shelter(reservation: Reservation):
     print(reservation.dict())
+    shelter = get_shelter_by_id(reservation.shelter_id)
+    shelter = Shelter(**shelter)
+    for s in shelter.queue:
+        if reservation.phone_number == s.phone_number:
+            return {"message": "Error: phone number already added"}
     # print(reservation.)
     #is phone legit
     # if not raise http error 404
@@ -94,6 +99,29 @@ async def reserve_shelter(reservation: Reservation):
 @app.post("/check-in/{shelter_id}/{phone_number}")
 async def check_in_shelter(shelter_id: str, phone_number: str):
     shelter = get_shelter_by_id(shelter_id)
+    shelter_obj = Shelter(**shelter)
+    
+    for q in shelter_obj.queue:
+        if q.phone_number == phone_number:
+            print(q)
+            q.check_in = True
+            shelter_obj.curr_cap += q.num_people
+            print(shelter_obj)
+            return update_shelter(shelter_obj)
+
+    return {"message": "Reservation not found"}
+
+@app.delete("/check-in/{shelter_id}/{phone_number}")
+async def check_in_shelter(shelter_id: str, phone_number: str):
+    shelter = get_shelter_by_id(shelter_id)
+    shelter_obj = Shelter(**shelter)
+    
+    for q in shelter_obj.queue:
+        if q.phone_number == phone_number:
+            shelter_obj.queue.remove(q)
+            return update_shelter(shelter_obj)
+
+    return {"message": "Reservation not found"}
 
 
 

@@ -23,7 +23,7 @@ function updateShelters(shelters) {
         shelters = Object.values(shelters);
 
         console.log("Filtering shelters:", filter);
-        
+    
         shelters.filter(shelter => 
             filter === 'All' || shelter.type.trim().toLowerCase() === filter.trim().toLowerCase()
         )

@@ -293,12 +293,13 @@ button[type="submit"]:hover {
 
 .queue-item {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    background: #f4f4f4;
-    padding: 10px;
-    border-radius: 5px;
+    justify-content: space-between;
+    background: white;
+    padding: 12px;
+    border-radius: 6px;
     margin: 5px 0;
+    width: 100%;
 }
 
 .queue-item button {
@@ -390,18 +391,30 @@ button[type="submit"]:hover {
     width: 100%;
 }
 
-/* Check-in button */
 .check-in-btn {
     background: #ff6961;
     color: white;
     border: none;
-    padding: 8px 12px;
+    padding: 8px 14px;
     font-size: 14px;
-    border-radius: 5px;
+    border-radius: 6px;
     cursor: pointer;
-    transition: background 0.3s ease;
+    transition: background 0.3s ease, transform 0.2s ease;
+    font-weight: bold;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
+/* Hover Effect */
 .check-in-btn:hover {
     background: #e04e2a;
+    transform: scale(1.05);
+}
+
+/* Add margin so button doesn’t touch the text */
+.queue-item .check-in-btn {
+    margin-left: 10px;
 }

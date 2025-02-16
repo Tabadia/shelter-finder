@@ -40,7 +40,7 @@ async function queuePopup(shelterID) {
         listItem.classList.add("queue-item");
         listItem.innerHTML = `
             <span><strong>${person.name}</strong> (${person.phone_number})</span>
-            <button onclick="checkIn('${person.phone_number}', ${shelterID})">Check In</button>
+            <button onclick="checkIn('${person.phone_number}', '${shelterID}')">Check In</button>
         `;
         queueList.appendChild(listItem);
     });
@@ -49,9 +49,14 @@ async function queuePopup(shelterID) {
     checkedIn.forEach(person => {
         const listItem = document.createElement("li");
         listItem.classList.add("queue-item");
-        listItem.innerHTML = `<span><strong>${person.name}</strong> (${person.phone})</span>`;
+        listItem.innerHTML = `<span><strong>${person.name}</strong> (${person.phone_number})</span>
+        <button onclick="removeCheckIn('${person.phone_number}', '${shelterID}')">Remove</button>
+        `;
+        
         checkedInList.appendChild(listItem);
     });
+
+    queuePopup.style.display = "block";
 }
 
 function closeQueuePopup() {
@@ -161,9 +166,8 @@ async function fetchQueue(shelterID) {
         const shelter = await response.json();
         console.log("shelter:", shelter);
 
-        const queue = shelter.queue.filter(person => !person.checked_in);
-        const checkedIn = shelter.queue.filter(person => person.checked_in);
-
+        const queue = shelter.queue.filter(person => !person.check_in);
+        const checkedIn = shelter.queue.filter(person => person.check_in);
         
         let queueList = document.getElementById("queueList");
         let checkedInList = document.getElementById("checkedInList");
@@ -172,34 +176,26 @@ async function fetchQueue(shelterID) {
         checkedInList.innerHTML = "";
 
         queue.forEach(person => {
-            const li = document.createElement("li");
-            li.innerHTML = `
-                <span>${person.name} - ${person.phone_number}</span>
-                <button class="check-in-button" onclick="checkIn('${person.name}', '${shelterID}')">Check In</button>
+            const listItem = document.createElement("li");
+            listItem.classList.add("queue-item");
+            listItem.innerHTML = `
+                <span><strong>${person.name}</strong> (${person.phone_number})</span>
+                <button onclick="checkIn('${person.phone_number}', '${shelterID}')">Check In</button>
             `;
-            queueList.appendChild(li);
+            queueList.appendChild(listItem);
         });
-
-        if (queueList.innerHTML === "") {
-            const li = document.createElement("li");
-            li.textContent = "No one in queue.";
-            queueList.appendChild(li);
-        }
 
         checkedIn.forEach(person => {
-            const li = document.createElement("li");
-            li.innerHTML = `<span>${person.name} - ${person.phone}</span>`;
-            checkedInList.appendChild(li);
+            const listItem = document.createElement("li");
+            listItem.classList.add("queue-item");
+            listItem.innerHTML = `
+                <span><strong>${person.name}</strong> (${person.phone_number})</span>
+                <button onclick="removeCheckIn('${person.phone_number}', '${shelterID}')">Remove</button>
+            `;
+            checkedInList.appendChild(listItem);
         });
 
-        if (checkedInList.innerHTML === "") {
-            const li = document.createElement("li");
-            li.textContent = "No one checked in.";
-            checkedInList.appendChild(li);
-        }
-
-        document.getElementById("queuePopup").style.display = "block";
-
+        return [queue, checkedIn];
     } catch (error) {
       console.error("Error fetching location:", error);
     }
@@ -242,5 +238,25 @@ async function removeShelter(shelterID) {
         window.location.reload();
     } catch (error) {
         console.error('Error deleting shelter:', error);
+    }
+}
+
+async function removeCheckIn(number, shelterID) {
+    try {
+        const response = await fetch(`/check-in/${shelterID}/${number}`, {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ phone: number })
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        console.log(`Removed check-in: ${number}`);
+        fetchQueue(shelterID); 
+
+    } catch (error) {
+        console.error("Error removing check-in:", error);
     }
 }

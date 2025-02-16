@@ -8,7 +8,7 @@ class Resources(BaseModel):
     
 ## data models
 class Shelter(BaseModel):
-    ShelterID: int #     shelter_id = str(uuid.uuid4()) generate the id when creating the shelter
+    ShelterID: str #     shelter_id = str(uuid.uuid4()) generate the id when creating the shelter
     name: str
     address: str
     capacity: int
@@ -17,12 +17,16 @@ class Shelter(BaseModel):
     verif: bool
     type: str
     distance: float
+    resources: str
+    # time: int
 
 
 class Client(BaseModel):
     username: str
     password: str
     shelters_ids: list[str]
+    lat: float
+    long: float
 
 class User(BaseModel):
     id: int
@@ -54,3 +58,7 @@ class ReservationUpdate(BaseModel):
     shelter_id: Optional[int] = None
     start_date: Optional[str] = None
     end_date: Optional[str] = None
+
+class Location(BaseModel):
+    lat: float
+    lon: float

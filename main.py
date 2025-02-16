@@ -4,7 +4,7 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from fastapi.responses import FileResponse
 from models import Shelter, User, Reservation, ShelterPost, ShelterUpdate, UserUpdate, ReservationUpdate, Location, QueueItem, ClientPost, Client, ClientLogin
-from aws import get_all_shelters, get_my_shelters, get_shelter_by_id, post_shelter, get_all_users, post_user, get_all_reservations, get_reservation_by_id, post_reservation, update_shelter, check_client_login
+from aws import get_all_shelters, get_my_shelters, get_shelter_by_id, post_shelter, get_all_users, post_user, get_all_reservations, get_reservation_by_id, post_reservation, update_shelter, check_client_login, del_shelter, find_user_by_shelter_id
 from distance import get_travel_time, convert_duration_to_minutes
 from summary import gen_summary
 import time
@@ -57,10 +57,10 @@ def add_to_queue(shelter_id, phone_number, num_people, name):
     # move to where user is checked in
     if shelter.curr_cap == shelter.capacity:
         raise HTTPException(status_code=400, detailE="Shelter is full")
-    shelter.summary = gen_summary(shelter.name, shelter.queue, shelter.curr_cap, shelter.capacity, shelter.resources, shelter.type)
-    #print(shelter)
-    #print(update_shelter(shelter))
-    #print(queue_count(shelter))
+    #shelter.summary = gen_summary(shelter.name, shelter.queue, shelter.curr_cap, shelter.capacity, shelter.resources, shelter.type)
+    print(shelter)
+    print("\n...................\n")
+    print(update_shelter(shelter))
     return {"message": "Added to queue successfully",
     "count": queue_count(shelter)
     }
@@ -90,6 +90,11 @@ async def reserve_shelter(reservation: Reservation):
     # if not raise http error 404
     #print(queue_count(reservation))
     return add_to_queue(reservation.shelter_id, reservation.phone_number, reservation.num_people, reservation.name)
+
+@app.post("/check-in/{shelter_id}/{phone_number}")
+async def check_in_shelter(shelter_id: str, phone_number: str):
+    shelter = get_shelter_by_id(shelter_id)
+
 
 
 # Shelter Endpoints
@@ -131,8 +136,19 @@ async def create_shelter(shelter: ShelterPost):
 
 @app.delete("/shelters/{shelter_id}")
 async def delete_shelter(shelter_id: str):
-    delete_shelter(shelter_id)
-    return {"message": "Shelter deleted successfully"}
+    print(shelter_id)
+    del_shelter(shelter_id)
+    res = find_user_by_shelter_id(shelter_id)
+    print(res)
+
+    # # remove shelter_id from user
+    # client = get_user_by_username(owner_username)
+    # if 'shelters_ids' not in client:
+    #     client['shelters_ids'] = []
+    # # user = update_user(owner_username, {'shelters_ids': client['shelters_ids'] + [shelter.ShelterID]})
+    
+    # result2 = update_user(username, update) # delete client.shelter_id
+    # return {"result": result, "result2": result2}
 
 # User Endpoints
 @app.get("/users/", response_model=List[Client])

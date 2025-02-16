@@ -34,9 +34,14 @@ function updateShelters(shelters) {
 
                 const shelterBox = document.createElement("div");
                 shelterBox.classList.add("shelter-box");
+
+                let summaryMultiline = shelter.summary;
+
+                // Escape backticks and quotes
+                let escapedSummary = summaryMultiline.replace(/`/g, '\\`').replace(/"/g, '\\"');
+                console.log(shelter.SHelte)
                 shelterBox.innerHTML = `
                     <div class="shelter-info">
-                        <input type="hidden" id="shelterID" value="${shelter.ShelterID}">
                         <div class="name">${getFontAwesomeIcon(shelter.type)} 
                             ${shelter.name}
                             ${shelter.verif ? '<span class="fa-regular fa-circle-check verified"></span>' : ''}
@@ -58,17 +63,18 @@ function updateShelters(shelters) {
                         <div class="shelter-buttons">
                             <button class="more-info" 
                             onclick="showDetails(
-                                '${shelter.name} ${shelter.verif ? '<span class="fa-regular fa-circle-check verified"></span>' : ''}', 
+                                '${shelter.name} ${shelter.verif ? '<i class="fa-regular fa-circle-check verified"></i>' : ''}', 
                                 '${shelter.time}', 
                                 '${shelter.capacity - shelter.curr_cap}', 
                                 '${shelter.address}', 
                                 '${shelter.desc}', 
                                 '${shelter.resources}', 
-                                '${shelter.type}'
+                                '${shelter.type}',
+                                '${escapedSummary}'
                             )">
                             View Details
                             </button>
-                            <button class="rsvp" onclick="rsvpPopup()">Reserve</button>
+                            <button class="rsvp" onclick="rsvpPopup('${shelter.ShelterID}')">Reserve</button>
                         </div>
                     </div>
                     <div class="shelter-image">
@@ -125,7 +131,9 @@ function switchToClient() {
 
 const popupRSVP = document.getElementById("popupRSVP");
 
-function rsvpPopup() {
+function rsvpPopup(shelterID) {
+    document.querySelector("#shelterID").value = shelterID;
+    console.log('shelterID:', shelterID);
     popupRSVP.style.display = "block";
 }
 
@@ -135,7 +143,7 @@ function submitRSVP(event) {
     const numPeople = document.getElementById("numPeople").value;
     const name = document.getElementById("userName").value;
     popupRSVP.style.display = "none";
-    const shelterId = document.querySelector("#shelterID").value; // Assuming you have a hidden input field with the shelter ID
+    const shelterId = document.querySelector("#shelterID").value; 
     console.log(shelterId);
     fetch("/reserve", {
         method: "POST",
@@ -168,7 +176,7 @@ function submitRSVP(event) {
 
 const popup = document.getElementById("popup");
 
-function showDetails(name, distance, people, address, description, resources, type) {
+function showDetails(name, distance, people, address, description, resources, type, summary) {
     const popup = document.getElementById("popup");
     const popupTitle = document.getElementById("popupTitle");
     const popupDistance = document.getElementById("popupDistance");
@@ -180,15 +188,13 @@ function showDetails(name, distance, people, address, description, resources, ty
     const popupReserveButton = document.getElementById("popupReserve");
     const popupIcon = document.getElementById("popupIcon"); 
 
-    console.log('inittt', popup, popupIcon);
-
     popupTitle.textContent = name;
     popupDistance.textContent = `${distance} minutes`;
     popupPeople.textContent = `${people}`;
     popupAddress.textContent = `${address}`;
     popupDescription.textContent = `${description}`;
     popupResources.textContent = resources;
-    popupAISummary.textContent = "(Coming Soon)";
+    popupAISummary.textContent = summary;
 
 
     type = type.trim().toLowerCase(); // Remove spaces, ensure lowercase
@@ -264,3 +270,9 @@ function getFontAwesomeIcon(type) {
             return "<i class=\"fa-solid fa-question\"></i>";
     }
 }
+
+
+
+
+
+

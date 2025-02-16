@@ -59,25 +59,39 @@
         
         <!-- <button id="viewQueueButton" onclick="toggleQueue()">View Queue</button> -->
 
-        <div id="popup" class="popup">
+        <!-- Queue Popup -->
+        <!-- Queue Popup -->
+        <div id="queuePopup" class="popup" style="display: none;">
             <div class="popup-content">
-                <span class="close" onclick="closePopup()">&times;</span>
-                <p><span id="popupIcon"></span></p>
-                <h2 id="popupTitle" class="popup-title"></h2>                
+                <span class="close" onclick="closeQueuePopup()">&times;</span>
+                <h2>Queue for Shelter</h2>
+                <div id="queueContainer">
+                    <div class="queue-column">
+                        <h3>Queued</h3>
+                        <ul id="queueList"></ul>
+                    </div>
+                    <div class="queue-column">
+                        <h3>Checked In</h3>
+                        <ul id="checkedInList"></ul>
+                    </div>
+                </div>
             </div>
         </div>
         
-        <div id="queueContainer">
-            <div class="column">
+
+
+        
+         <!--<div id="queueContainer" class="queue-container">
+            <div class="queue-column">
                 <h3>Queued</h3>
                 <ul id="queueList"></ul>
             </div>
-            <div class="column">
+            <div class="queue-column">
                 <h3>Checked In</h3>
                 <ul id="checkedInList"></ul>
             </div>
         </div>
-    </div>
+    </div> -->
     
 
     <script src="../static/js/client-main.js"></script>

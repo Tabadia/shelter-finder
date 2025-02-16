@@ -20,20 +20,48 @@ function addShelter() {
 }
 
 async function queuePopup(shelterID) {
-    // const queuePopup = document.getElementById("queuePopup");
-    // const queueContent = document.getElementById("queueContent");
-    // const queueClose = document.getElementById("queueClose");
-    // queuePopup.style.display = "block";
-    // queueClose.onclick = function() {
-    //     queuePopup.style.display = "none";
-    // }
-    await fetchQueue(shelterID);
+    const queuePopup = document.getElementById("queuePopup");
+    const queueList = document.getElementById("queueList");
+    const checkedInList = document.getElementById("checkedInList");
+
+    queuePopup.style.display = "block"; 
+
+    const queueData = await fetchQueue(shelterID);
+
+    const queue = queueData[0];
+    const checkedIn = queueData[1];
+
+    queueList.innerHTML = "";  
+    checkedInList.innerHTML = "";  
+
+    // Populate Queue List
+    queue.forEach(person => {
+        const listItem = document.createElement("li");
+        listItem.classList.add("queue-item");
+        listItem.innerHTML = `
+            <span><strong>${person.name}</strong> (${person.phone_number})</span>
+            <button onclick="checkIn('${person.phone_number}', ${shelterID})">Check In</button>
+        `;
+        queueList.appendChild(listItem);
+    });
+
+    // Populate Checked-In List
+    checkedIn.forEach(person => {
+        const listItem = document.createElement("li");
+        listItem.classList.add("queue-item");
+        listItem.innerHTML = `<span><strong>${person.name}</strong> (${person.phone})</span>`;
+        checkedInList.appendChild(listItem);
+    });
+}
+
+function closeQueuePopup() {
+    document.getElementById("queuePopup").style.display = "none";
 }
 
 document.addEventListener("DOMContentLoaded", async function () {
     console.log("DOM loaded");
     const username = localStorage.getItem("username");
-    let shelters = await fetchMyShelters(username); //TODO: update w/ the current user
+    let shelters = await fetchMyShelters(username); 
     console.log(shelters);
     
     let shelterContainer = document.getElementById("shelterContainer");
@@ -59,20 +87,14 @@ document.addEventListener("DOMContentLoaded", async function () {
                                     <i class="fa-solid fa-people-group"></i>
                                     <span>${shelter.capacity - shelter.curr_cap}</span>
                                 </span>
-                                <span class="time">
-                                    <i class="fa-solid fa-stopwatch"></i>
-                                    <span>${shelter.time}min</span>
-                                </span>
                                 <span class="address">
                                     <i class="fa-solid fa-location-dot"></i>
                                     <span>${shelter.address}</span>
                                 </span>
                             </div>
-                            <p class="description">${shelter.desc}</p>
                             <div class="shelter-buttons">
-                                <button class="queue" onclick="queuePopup('${shelter.ShelterID}')">
-                                View Queue
-                                </button>
+                                <button class="queue" onclick="queuePopup('${shelter.ShelterID}')">View Queue</button>
+                                <button class="remove" onclick="removeShelter('${shelter.ShelterID}')">Remove</button>
                             </div>
                         </div>
                         <div class="shelter-image">
@@ -86,6 +108,9 @@ document.addEventListener("DOMContentLoaded", async function () {
     }
     displayShelters();
 });
+function closeQueuePopup() {
+    document.getElementById("queuePopup").style.display = "none";
+}
 
 
 document.getElementById('addShelterForm').addEventListener('submit', function(event) {
@@ -129,17 +154,93 @@ function getFontAwesomeIcon(type) {
 
 async function fetchQueue(shelterID) {
     try {
-        const response = await fetch(`/shelters/queue/${shelterID}`);
+        const response = await fetch(`/shelters/${shelterID}`);
         if (!response.ok) {
             throw new Error(`HTTP error! Status: ${response.status}`);
         }
-        let ret = await response.json();
-        let queue = ret[0];
-        let checked_in = ret[1];
-        console.log("queue:", queue);
-        console.log("checked_in:", checked_in);
-        return data;
+        const shelter = await response.json();
+        console.log("shelter:", shelter);
+
+        const queue = shelter.queue.filter(person => !person.checked_in);
+        const checkedIn = shelter.queue.filter(person => person.checked_in);
+
+        
+        let queueList = document.getElementById("queueList");
+        let checkedInList = document.getElementById("checkedInList");
+
+        queueList.innerHTML = ""; 
+        checkedInList.innerHTML = "";
+
+        queue.forEach(person => {
+            const li = document.createElement("li");
+            li.innerHTML = `
+                <span>${person.name} - ${person.phone_number}</span>
+                <button class="check-in-button" onclick="checkIn('${person.name}', '${shelterID}')">Check In</button>
+            `;
+            queueList.appendChild(li);
+        });
+
+        if (queueList.innerHTML === "") {
+            const li = document.createElement("li");
+            li.textContent = "No one in queue.";
+            queueList.appendChild(li);
+        }
+
+        checkedIn.forEach(person => {
+            const li = document.createElement("li");
+            li.innerHTML = `<span>${person.name} - ${person.phone}</span>`;
+            checkedInList.appendChild(li);
+        });
+
+        if (checkedInList.innerHTML === "") {
+            const li = document.createElement("li");
+            li.textContent = "No one checked in.";
+            checkedInList.appendChild(li);
+        }
+
+        document.getElementById("queuePopup").style.display = "block";
+
     } catch (error) {
       console.error("Error fetching location:", error);
+    }
+}
+
+async function checkIn(number, shelterID) {
+    try {
+        const response = await fetch(`/check-in/${shelterID}/${number}`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ phone: number })
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        console.log(`Checked in: ${number}`);
+        fetchQueue(shelterID); 
+
+    } catch (error) {
+        console.error("Error checking in:", error);
+    }
+}
+
+
+async function removeShelter(shelterID) {
+    try {
+        const response = await fetch(`/shelters/${shelterID}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        const data = await response.json();
+        console.log('Shelter deleted:', data);
+        window.location.reload();
+    } catch (error) {
+        console.error('Error deleting shelter:', error);
     }
 }

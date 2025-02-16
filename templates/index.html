@@ -31,12 +31,14 @@
                 <button onclick="filterShelters('Other')">Other</button>
             </div>
         </div>
-         
+
+        
         <div class="content-container">
             <h2>Available Shelters</h2>
-            <div id="shelterContainer" class="shelter-container">Loading...</div>
+            <div id="shelterContainer" class="shelter-container">
+                <p id="loadingMessage">Loading shelters...</p> 
+            </div>                      
         </div>
-    </div>
 
     <div id="popup" class="popup">
         <div class="popup-content">
@@ -49,7 +51,7 @@
             <p><i class="fa-solid fa-book"></i>  <strong>Description:</strong> <span id="popupDescription"></span></p>
 
             <p><i class="fa-solid fa-suitcase-medical"></i>   <strong>Resources:</strong> <span id="popupResources"></span></p>
-            <p><strong>AI Summary:</strong> <span id="popupAISummary">(Coming Soon)</span></p>
+            <p><strong>AI Summary:</strong> <span id="popupAISummary"></span></p>
             
             <button id="popupReserve" onclick="rsvpPopup()">Reserve</button>
         </div>
@@ -73,5 +75,6 @@
             </form>
         </div>
     </div>
+    <input type="hidden" id="shelterID" value="">
 </body>
 </html>

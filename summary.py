@@ -25,7 +25,8 @@ def gen_summary(shelter_name, queue, curr_cap, capacity, resources, type):
     - **Available Resources**: {resources}
     - **Shelter Type**: {type}
 
-    Generate a concise and actionable summary to help this shelter prepare for incoming residents and optimize its resources for emergency preparedness.
+    Generate a concise and actionable summary to help this shelter prepare for incoming residents and optimize its resources for emergency preparedness. Provide this summary
+    in paragraph form, do not format it in any way. It should only be full sentences.
     """
 
     message = {

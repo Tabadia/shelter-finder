@@ -98,12 +98,21 @@ def update_shelter(shelter):
 #     
 
 
-def delete_shelter(shelter_id):
+def del_shelter(shelter_id):
     shelter_table.delete_item(Key={'ShelterID': shelter_id})
+    client = find_user_by_shelter_id(shelter_id)
+    if client:
+        client['shelters_ids'].remove(shelter_id)
+        update_user(client['username'], {'shelters_ids': client['shelters_ids']})
 
 # User Methods
-
-
+def find_user_by_shelter_id(shelter_id):
+    response = client_table.scan()
+    for item in response['Items']: 
+        if 'shelters_ids' in item:
+            if shelter_id in item['shelters_ids']:
+                return item
+    return None
 
 def get_all_users():
     response = client_table.scan()

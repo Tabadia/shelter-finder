@@ -1,5 +1,6 @@
 import uuid
 import json
+from summary import gen_summary
 
 import boto3
 from boto3.dynamodb.conditions import Key
@@ -85,6 +86,7 @@ def post_shelter(shelter: ShelterPost):
 
 def update_shelter(shelter):
     # shelter_id = shelter['ShelterID']
+    shelter.summary = gen_summary(shelter.name, shelter.queue, shelter.curr_cap, shelter.capacity, shelter.resources, shelter.type)
     response = shelter_table.put_item(
         Item=shelter
     )
@@ -114,10 +116,14 @@ def post_user(user: ClientPost):
     client_table.put_item(Item=user.dict())
     return user
 
-def check_password(user: ClientLogin):
-    user.id = str(uuid.uuid4())
-    client_table.put_item(Item=user.dict())
-    return user
+def check_client_login(user: ClientLogin):
+    response = client_table.get_item(Key={'username': user.username})  
+    item = response.get('Item', {})
+    if item:
+        if item['password'] == user.password:
+            return 0 # passowrd true, forward user to client dashbaord
+        return 1 # password false, ask user to re-enter password
+    return 2 # user not found, ask user to sign up
 
 
 def update_user(username, updates):

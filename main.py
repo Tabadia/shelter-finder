@@ -7,7 +7,7 @@ from models import Shelter, User, Reservation, ShelterPost, ShelterUpdate, UserU
 from data import shelters, users, reservations
 from aws import get_all_shelters, get_my_shelters, get_shelter_by_id, post_shelter, get_all_users, post_user, get_all_reservations, get_reservation_by_id, post_reservation, update_shelter, check_client_login
 from distance import get_radar_time, geocode, convert_duration_to_minutes
-# from summary import gen_summary
+from summary import gen_summary
 
 app = FastAPI()
 
@@ -27,9 +27,13 @@ async def read_root():
 async def get_client():
     return FileResponse("templates/client-login.html")
 
-@app.get("/client")
+@app.get("/client-signup")
 async def get_client():
-    return FileResponse("templates/client.html")
+    return FileResponse("templates/signup.html")
+
+@app.get("/client-dashboard")
+async def get_client():
+    return FileResponse("templates/client-dashboard.html")
 
 @app.get("/add-shelter")
 async def get_client():
@@ -56,9 +60,17 @@ def add_to_queue(shelter_id, phone_number, num_people, name):
     shelter = Shelter(**shelter_data)
     shelter.queue.append(reservation)
     # move to where user is checked in
-    shelter.curr_cap = shelter.curr_cap + 1
-    update_shelter(shelter.dict())
+    if shelter.curr_cap == 0:
+        raise HTTPException(status_code=400, detailE="Shelter is full")
+    shelter.curr_cap = shelter.curr_cap - 1
+    shelter.summary = gen_summary(shelter.name, shelter.queue, shelter.curr_cap, shelter.capacity, shelter.resources, shelter.type)
+    print(update_shelter(shelter.dict()))
     return {"message": "Added to queue successfully"}
+
+# def separate_queue(shelter, phone_number):
+#     for q in shelter.queue:
+#         if q["phone_number"] == phone_number:
+
 
 # should be ran on frontend clientside
 def check_in(shelter, phone_number, num_people):
@@ -94,6 +106,8 @@ async def read_shelter(shelter_id: str):
 
 @app.post("/shelters/", response_model=Shelter)
 async def create_shelter(shelter: ShelterPost):
+    #update shelter.summary
+    shelter.summary = gen_summary(shelter.name, shelter.queue, shelter.curr_cap, shelter.capacity, shelter.resources, shelter.type)
     return post_shelter(shelter)
 
 # @app.put("/shelters/{shelter_id}", response_model=Shelter)
@@ -122,10 +136,16 @@ async def create_user(user: ClientPost):
     return post_user(user)
 
 
-@app.post("/api/client/login/", response_model=Client)
-async def create_user(clientLogin: ClientLogin):
+@app.post("/api/client/login/")
+async def client_login(clientLogin: ClientLogin):
     print('debug: ', clientLogin)
-    return check_client_login(clientLogin)
+    ret = check_client_login(clientLogin)
+    if ret == 0:
+       return {"code": "0"} # valid login
+    if ret == 1:
+        return {"code": "1"}, # invalid login
+    if ret == 2:
+       return {"code": "2"} # user not found
 
 @app.put("/users/{user_id}", response_model=User)
 async def update_user(user_id: int, user: UserUpdate):

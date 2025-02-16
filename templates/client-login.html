@@ -15,15 +15,12 @@
             <label for="loginPass">Password:</label>
             <input type="password" id="loginPass" name="loginPass" required>
             <button type="submit">Login</button>
-        </form>
 
-        <h2>Signup</h2>
-        <form id="signupForm">
-            <label for="signupUser">Username:</label>
-            <input type="text" id="signupUser" name="signupUser" required>
-            <label for="signupPass">Password:</label>
-            <input type="password" id="signupPass" name="signupPass" required>
-            <button type="submit">Signup</button>
+            <p class="signup-text">
+
+                Not a member? <a href="#" onclick="SwitchToSignup()">Sign Up</a></a>
+            </p>
+            <div id="popup"></div>
         </form>
     </div>
     <script src="../static/js/client-login.js"></script>

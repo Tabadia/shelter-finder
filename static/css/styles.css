@@ -19,7 +19,7 @@ header {
 h2 {
     font-size: 24px;
     font-weight: bold; 
-    text-decoration: underline; 
+    /* text-decoration: underline;  */
     text-align: center; 
     margin-bottom: 15px; 
 }
@@ -237,8 +237,8 @@ h2 {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 90%; /* Ensures it doesn't overflow on smaller screens */
-    max-width: 400px; /* Restrict max width */
+    width: 90%; 
+    max-width: 400px; 
     background: white;
     padding: 20px;
     border-radius: 12px;
@@ -263,7 +263,7 @@ h2 {
     color: #333;
 }
 
-/* Fields are properly sized */
+
 .popup input[type="text"], 
 .popup input[type="number"] {
     width: 100%;
@@ -349,7 +349,7 @@ h2 {
 @media screen and (max-width: 500px) {
     .popup {
         width: 95%;
-        max-width: 350px; /* Further restrict max width */
+        max-width: 350px; 
     }
 }
 

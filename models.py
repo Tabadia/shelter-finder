@@ -12,9 +12,9 @@ class Shelter(BaseModel):
     name: str
     address: str
     capacity: int
-    # queue: int
+    queue: List[str]
     desc: str
-    verif: bool = False
+    verif: bool
     type: str
     resources: str
     # time: int
@@ -50,9 +50,8 @@ class ShelterPost(BaseModel):
     # queue: int
     desc: str
     type: str
-    verif: bool = False
+    verif: Optional[bool]
     resources: str
-    owner_id: int
 
 class ShelterUpdate(BaseModel):
     name: Optional[str] = None

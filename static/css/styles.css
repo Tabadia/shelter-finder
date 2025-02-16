@@ -165,9 +165,10 @@ header {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 400px; /* Adjusted width */
+    width: 90%; /* Ensures it doesn't overflow on smaller screens */
+    max-width: 400px; /* Restrict max width */
     background: white;
-    padding: 25px;
+    padding: 20px;
     border-radius: 12px;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
     z-index: 1000;
@@ -190,6 +191,16 @@ header {
     color: #333;
 }
 
+/* Fields are properly sized */
+.popup input[type="text"], 
+.popup input[type="number"] {
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
 .close:hover {
     color: red;
 }
@@ -209,6 +220,18 @@ header {
     transition: background 0.3s ease;
 }
 
+.popup button {
+    width: 100%;
+    padding: 12px;
+    margin-top: 10px;
+    background: #FF6961;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
 .popup-content button:hover {
     background: #e04e2a;
 }
@@ -216,6 +239,13 @@ header {
 /* Add Spacing for Readability */
 .popup-content p {
     margin: 10px 0;
+}
+
+@media screen and (max-width: 500px) {
+    .popup {
+        width: 95%;
+        max-width: 350px; /* Further restrict max width */
+    }
 }
 
 .close {

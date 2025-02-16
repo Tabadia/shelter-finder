@@ -55,34 +55,25 @@ function formatTime(minutes) {
 }
 
 function updateShelters(shelters) {   
-    
     const shelterContainer = document.getElementById("shelterContainer");
 
     function displayShelters(filter) {
         shelterContainer.innerHTML = "";
         shelters = Object.values(shelters);
         console.log(shelters);
+        
         shelters.filter(shelter => filter === 'All' || shelter.type === filter)
             .sort((a, b) => parseFloat(a.time) - parseFloat(b.time))
             .forEach(shelter => {
-                // call showDetails(shelter)
                 console.log(shelter);
                 console.log(shelter.type);
-                showDetails(
-                    shelter.name,
-                    shelter.time,
-                    shelter.distance,
-                    shelter.people,
-                    shelter.address,
-                    shelter.description,
-                    shelter.resources
-                );
-            });
+
                 const shelterBox = document.createElement("div");
                 shelterBox.classList.add("shelter-box");
                 shelterBox.innerHTML = `
                     <div class="shelter-content">
                         <div class="shelter-info">
+                            <input type="hidden" id="shelterID" value="${shelter.ShelterID}">
                             <h3 class="shelter-name">${shelter.name}</h3>
                             <p><strong>Distance:</strong> ${shelter.time} minutes</p>
                             <p><strong>People:</strong> ${shelter.people}</p>
@@ -99,18 +90,19 @@ function updateShelters(shelters) {
                             </div>
                         </div>
                         <div class="shelter-image">
-                            <img src="../static/images/${shelter.image}" alt"">
+                            <img src="../static/images/${shelter.image}" alt="">
                         </div>
                     </div>
-
                 `;
+
                 shelterContainer.appendChild(shelterBox);
             });
     }
 
     window.filterShelters = displayShelters;
     displayShelters('All');
-    };
+};
+
 
 async function fetchLocation(lat, lon) {
     try {
@@ -158,9 +150,35 @@ function rsvpPopup() {
 function submitRSVP() {
     const phoneNumber = document.getElementById("phoneNumber").value;
     const numPeople = document.getElementById("numPeople").value;
-    alert("You have successfully RSVP'd to this shelter. phoneNumber: " + phoneNumber + ", numPeople: " + numPeople + "}");
+    const name = document.getElementById("userName").value;
     popupRSVP.style.display = "none";
-
+    const shelterId = document.querySelector("#shelterID").value; // Assuming you have a hidden input field with the shelter ID
+    fetch(`/reserve/${shelterId},${phoneNumber},${numPeople},${name}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            shelter_id: shelterId,
+            phone_number: phoneNumber,
+            num_people: numPeople,
+            name: name
+        })
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log('Reservation successful:', data);
+        alert('Reservation successful!');
+    })
+    .catch(error => {
+        console.error('Error making reservation:', error);
+        alert('Error making reservation. Please try again.');
+    });
     // post request
 }
 
@@ -169,6 +187,7 @@ function closeRSVPPopup() {
 }
 
 const popup = document.getElementById("popup");
+
 function showDetails(name, distance, people, address, description, resources) {
     const popupTitle = document.getElementById("popupTitle");
     const popupDistance = document.getElementById("popupDistance");
@@ -177,6 +196,7 @@ function showDetails(name, distance, people, address, description, resources) {
     const popupDescription = document.getElementById("popupDescription");
     const popupResources = document.getElementById("popupResources");
     const popupAISummary = document.getElementById("popupAISummary");
+    const popupReserveButton = document.getElementById("popupReserve"); 
 
     popupTitle.textContent = name;
     popupDistance.textContent = `Distance: ${distance} minutes`;
@@ -184,13 +204,32 @@ function showDetails(name, distance, people, address, description, resources) {
     popupAddress.textContent = `Address: ${address}`;
     popupDescription.textContent = description;
     popupResources.textContent = resources;
-    popupAISummary.textContent = "(Coming Soon)";
+    popupAISummary.textContent = "(Still to implement)";
 
+    popupReserveButton.setAttribute("onclick", `rsvpShelter('${name}', '${address}')`);
+    document.getElementById("popup").style.display = "flex";
+
+    // Set the icon based on shelter type
+    let iconHTML = "";
+    if (type === "Hospital") {
+        iconHTML = "🏥"; // Hospital Icon
+    } else if (type === "School") {
+        iconHTML = "🏫"; // School Icon
+    } else if (type === "Home") {
+        iconHTML = "🏠"; // Home Icon
+    } else if (type === "Homeless Shelter") {
+        iconHTML = "🛌"; // Shelter Icon
+    } else {
+        iconHTML = "❓"; // Default/Fallback Icon
+    }
+    popupIcon.innerHTML = iconHTML; // Insert the icon
+
+    // Show the popup
+    document.getElementById("popup").style.display = "flex";
     popup.style.display = "flex";
-
 };
-    
     
 function closePopup() {
     popup.style.display = "none";
 }
+

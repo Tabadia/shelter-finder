@@ -5,9 +5,8 @@ from pydantic import BaseModel
 from fastapi.responses import FileResponse
 from models import Shelter, User, Reservation, ShelterPost, ShelterUpdate, UserUpdate, ReservationUpdate, Location
 from data import shelters, users, reservations
-from aws import get_all_shelters, get_my_shelters, get_shelter_by_id, post_shelter, get_all_users, post_user, \
-    get_all_reservations, get_reservation_by_id, post_reservation
-
+from aws import get_all_shelters, get_my_shelters, get_shelter_by_id, post_shelter, get_all_users, post_user, get_all_reservations, get_reservation_by_id, post_reservation
+from distance import get_radar_time, geocode, convert_duration_to_minutes
 
 app = FastAPI()
 
@@ -35,10 +34,22 @@ async def get_client():
 async def get_client():
     return FileResponse("templates/add-shelter.html")
 
+# def add_to_queue(shelter, phone_number, num_people, name):
 
 
-@app.post("/reserve/{shelter_id},{phone_number},{num_people}")
-async def reserve_shelter(shelter_id: int, phone_number: int, num_people: int):
+@app.post("/reserve/{shelter_id},{phone_number},{num_people},{name}")
+async def reserve_shelter(shelter_id: int, phone_number: int, num_people: int, name: str):
+    s = get_shelter_by_id(shelter_id)
+    print(shelter_id, phone_number, num_people, name)
+    print(s)
+    #s.queue ({ {name, phone_number}: num_people})
+
+    """
+    s.add_to_queue(phone_number, num_people, name)
+
+
+    """
+            
     return {"message": "Reservation created successfully"}
 
 # Shelter Endpoints
@@ -97,29 +108,29 @@ async def delete_user(user_id: int):
     return {"message": "User deleted successfully"}
 
 # Reservation Endpoints
-@app.get("/reservations/", response_model=List[Reservation])
-async def read_reservations():
-    return get_all_reservations()
+# @app.get("/reservations/", response_model=List[Reservation])
+# async def read_reservations():
+#     return get_all_reservations()
 
-@app.get("/reservations/{reservation_id}", response_model=Reservation)
-async def read_reservation(reservation_id: int):
-    ret = get_reservation_by_id(reservation_id)
-    if not ret:
-        raise HTTPException(status_code=404, detail="Reservation not found")
-    return ret
+# @app.get("/reservations/{reservation_id}", response_model=Reservation)
+# async def read_reservation(reservation_id: int):
+#     ret = get_reservation_by_id(reservation_id)
+#     if not ret:
+#         raise HTTPException(status_code=404, detail="Reservation not found")
+#     return ret
 
-@app.post("/reservations/", response_model=Reservation)
-async def create_reservation(reservation: Reservation):
-    return post_reservation(reservation)
+# @app.post("/reservations/", response_model=Reservation)
+# async def create_reservation(reservation: Reservation):
+#     return post_reservation(reservation)
 
-@app.put("/reservations/{reservation_id}", response_model=Reservation)
-async def update_reservation(reservation_id: int, reservation: ReservationUpdate):
-    return update_reservation(reservation_id, reservation.dict())
+# @app.put("/reservations/{reservation_id}", response_model=Reservation)
+# async def update_reservation(reservation_id: int, reservation: ReservationUpdate):
+#     return update_reservation(reservation_id, reservation.dict())
 
-@app.delete("/reservations/{reservation_id}")
-async def delete_reservation(reservation_id: int):
-    delete_reservation(reservation_id)
-    return {"message": "Reservation deleted successfully"}
+# @app.delete("/reservations/{reservation_id}")
+# async def delete_reservation(reservation_id: int):
+#     delete_reservation(reservation_id)
+#     return {"message": "Reservation deleted successfully"}
 
 # Live Headcount Endpoint
 @app.get("/shelters/{shelter_id}/headcount")

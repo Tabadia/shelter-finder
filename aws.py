@@ -1,4 +1,5 @@
 import uuid
+import json
 
 import boto3
 from boto3.dynamodb.conditions import Key
@@ -57,10 +58,20 @@ def get_shelter_by_id(shelter_id):
     response = shelter_table.get_item(Key={'ShelterID': shelter_id})
     return response.get('Item', {})
     
+def verify(s: ShelterPost):
+    with open("santa_clara_shelters.json", "r") as file:
+        verified_shelters = set(json.load(file)["shelters"])
 
+    if s.name in verified_shelters:
+        print("changed verification")
+        return True
+
+    else:
+        return False
 
 def post_shelter(shelter: ShelterPost):
     shelter.ShelterID = str(uuid.uuid4())
+    shelter.verif = verify(shelter)
     shelter_table.put_item(Item=shelter.dict())
     # add shelter.ShelterID to client table
     # user_table.update_item(

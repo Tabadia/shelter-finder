@@ -34,7 +34,7 @@ def geocode(address):
     else:
         data = response.json()
         #print(data)
-        return data[0]["lat"],  data[0]["lon"]
+        return data[0]["lat"], data[0]["lon"]
 
     
 def convert_duration_to_minutes(duration_text):

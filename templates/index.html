@@ -32,13 +32,14 @@
         
         <div class="content-container">
             <h2>Available Shelters</h2>
-            <div id="shelterContainer" class="shelter-container"></div>
+            <div id="shelterContainer" class="shelter-container">Loading...</div>
         </div>
     </div>
 
     <div id="popup" class="popup">
         <div class="popup-content">
             <span class="close" onclick="closePopup()">&times;</span>
+            <div id="popupIcon" class="popup-icon"></div> <!-- New Icon Placeholder -->
             <h2 id="popupTitle"></h2>
             <p id="popupDistance"></p>
             <p id="popupPeople"></p>
@@ -46,7 +47,7 @@
             <p id="popupDescription"></p>
             <p><strong>Resources:</strong> <span id="popupResources"></span></p>
             <p><strong>AI Summary:</strong> <span id="popupAISummary">(Coming Soon)</span></p>
-            <button>Reserve</button>
+            <button id="popupReserve">Reserve</button>
         </div>
     </div>
 
@@ -60,6 +61,9 @@
                 
                 <label for="numPeople">Number of People:</label>
                 <input type="number" id="numPeople" name="numPeople" required min="1">
+
+                <label for="userName">Name:</label>
+                <input type="text" id="userName" name="userName" required>
                 
                 <button type="submit" onclick="submitRSVP()">Reserve</button>
             </form>

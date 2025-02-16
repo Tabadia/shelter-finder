@@ -15,7 +15,7 @@ async function fetchMyShelters(owner_username) {
 
 document.addEventListener("DOMContentLoaded", async function () {
     console.log("DOM loaded");
-    let shelters = await fetchMyShelters('joe');
+    // let shelters = await fetchMyShelters('joe'); TODO: update w/ the current user
     console.log(shelters);
     
     let shelterContainer = document.getElementById("shelterContainer");

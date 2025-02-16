@@ -3,10 +3,11 @@ from fastapi import FastAPI, HTTPException
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from fastapi.responses import FileResponse
-from models import Shelter, User, Reservation, ShelterPost, ShelterUpdate, UserUpdate, ReservationUpdate, Location
+from models import Shelter, User, Reservation, ShelterPost, ShelterUpdate, UserUpdate, ReservationUpdate, Location, QueueItem, ClientPost, Client, ClientLogin
 from data import shelters, users, reservations
-from aws import get_all_shelters, get_my_shelters, get_shelter_by_id, post_shelter, get_all_users, post_user, get_all_reservations, get_reservation_by_id, post_reservation
+from aws import get_all_shelters, get_my_shelters, get_shelter_by_id, post_shelter, get_all_users, post_user, get_all_reservations, get_reservation_by_id, post_reservation, update_shelter, check_client_login
 from distance import get_radar_time, geocode, convert_duration_to_minutes
+# from summary import gen_summary
 
 app = FastAPI()
 
@@ -37,20 +38,42 @@ async def get_client():
 # def add_to_queue(shelter, phone_number, num_people, name):
 
 
-@app.post("/reserve/{shelter_id},{phone_number},{num_people},{name}")
-async def reserve_shelter(shelter_id: int, phone_number: int, num_people: int, name: str):
-    s = get_shelter_by_id(shelter_id)
-    print(shelter_id, phone_number, num_people, name)
-    print(s)
-    #s.queue ({ {name, phone_number}: num_people})
+class Reservation(BaseModel):
+    shelter_id: str
+    phone_number: str
+    num_people: int
+    name: str
 
-    """
-    s.add_to_queue(phone_number, num_people, name)
+def add_to_queue(shelter_id, phone_number, num_people, name):
+    reservation = QueueItem(
+        name=name,
+        phone_number=phone_number,
+        num_people=num_people,
+        check_in=False
+    )
+    shelter_data = get_shelter_by_id(shelter_id)
+    print(shelter_data)
+    shelter = Shelter(**shelter_data)
+    shelter.queue.append(reservation)
+    # move to where user is checked in
+    shelter.curr_cap = shelter.curr_cap + 1
+    update_shelter(shelter.dict())
+    return {"message": "Added to queue successfully"}
 
+# should be ran on frontend clientside
+def check_in(shelter, phone_number, num_people):
+    for q in shelter.queue:
+        if q["phone_number"] == phone_number:
+            q["check_in"] = True  # Fixed assignment
+            q.curr_cap += num_people
+            return {"message": "Check-in successful", "reservation": q}
+    return {"error": "Reservation not found"}
 
-    """
-            
-    return {"message": "Reservation created successfully"}
+@app.post("/reserve")
+async def reserve_shelter(reservation: Reservation):
+    print(reservation.shelter_id, reservation.phone_number, reservation.num_people, reservation.name)
+    return add_to_queue(reservation.shelter_id, reservation.phone_number, reservation.num_people, reservation.name)
+
 
 # Shelter Endpoints
 @app.get("/shelters/", response_model=List[Shelter])
@@ -73,9 +96,9 @@ async def read_shelter(shelter_id: str):
 async def create_shelter(shelter: ShelterPost):
     return post_shelter(shelter)
 
-@app.put("/shelters/{shelter_id}", response_model=Shelter)
-async def update_shelter(shelter_id: str, shelter: ShelterUpdate):
-    return update_shelter(shelter_id, shelter.dict())
+# @app.put("/shelters/{shelter_id}", response_model=Shelter)
+# async def update_shelter(shelter_id: str, shelter: ShelterUpdate):
+#     return update_shelter(shelter_id, shelter.dict())
 
 @app.delete("/shelters/{shelter_id}")
 async def delete_shelter(shelter_id: str):
@@ -83,7 +106,7 @@ async def delete_shelter(shelter_id: str):
     return {"message": "Shelter deleted successfully"}
 
 # User Endpoints
-@app.get("/users/", response_model=List[User])
+@app.get("/users/", response_model=List[Client])
 async def read_users():
     return get_all_users()
 
@@ -94,9 +117,15 @@ async def read_users():
 #         raise HTTPException(status_code=404, detail="User not found")
 #     return ret
 
-@app.post("/users/", response_model=User)
-async def create_user(user: User):
+@app.post("/users/", response_model=Client)
+async def create_user(user: ClientPost):
     return post_user(user)
+
+
+@app.post("/api/client/login/", response_model=Client)
+async def create_user(clientLogin: ClientLogin):
+    print('debug: ', clientLogin)
+    return check_client_login(clientLogin)
 
 @app.put("/users/{user_id}", response_model=User)
 async def update_user(user_id: int, user: UserUpdate):

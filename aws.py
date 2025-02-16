@@ -9,7 +9,7 @@ import os
 
 load_dotenv()
 
-from models import Shelter, ShelterPost, User, Reservation
+from models import Shelter, ShelterPost, User, Reservation, ClientPost, ClientLogin
 
 # Initialize DynamoDB resource
 session = boto3.Session(
@@ -23,11 +23,11 @@ dynamodb = session.resource('dynamodb')
 # Specify the table names
 shelter_table_name = 'Shelters'
 # user_table_name = 'Users'
-client_table_name = 'clients'
+client_table_name = 'Clients'
 reservation_table_name = 'Reservations'
 
 shelter_table = dynamodb.Table(shelter_table_name)
-user_table = dynamodb.Table(client_table_name)
+client_table = dynamodb.Table(client_table_name)
 reservation_table = dynamodb.Table(reservation_table_name)
 
 # Shelter Methods
@@ -36,7 +36,7 @@ def get_all_shelters():
     return response.get('Items', [])
 
 def get_my_shelters(owner_username: str):
-    response = user_table.get_item(Key={'username': owner_username})
+    response = client_table.get_item(Key={'username': owner_username})
     print('cc', response)
     item = response.get('Item', {})
     if item:
@@ -72,9 +72,10 @@ def verify(s: ShelterPost):
 def post_shelter(shelter: ShelterPost):
     shelter.ShelterID = str(uuid.uuid4())
     shelter.verif = verify(shelter)
+    print('shelter', shelter)
     shelter_table.put_item(Item=shelter.dict())
     # add shelter.ShelterID to client table
-    # user_table.update_item(
+    # client_table.update_item(
     #     Key={'username': clientUsers},
     #     UpdateExpression='SET #shelter_id = :shelter_id',
     #     ExpressionAttributeNames={'#shelter_id': 'ShelterID'},
@@ -82,32 +83,15 @@ def post_shelter(shelter: ShelterPost):
     # )
     return shelter
 
-def update_shelter(shelter_id, updates):
-    update_expression = 'set '
-    expression_attribute_values = {}
-    attribute_names = {}
-
-    for key, value in updates.items():
-        update_expression += f'#{key} = :{key}, '
-        expression_attribute_values[f':{key}'] = value
-        attribute_names[f'#{key}'] = key
-
-    update_expression = update_expression[:-2]  # Remove trailing comma and space
-
-    shelter_table.update_item(
-        Key={'ShelterID': shelter_id},
-        UpdateExpression=update_expression,
-        ExpressionAttributeValues=expression_attribute_values,
-        ExpressionAttributeNames=attribute_names
+def update_shelter(shelter):
+    # shelter_id = shelter['ShelterID']
+    response = shelter_table.put_item(
+        Item=shelter
     )
-    return get_shelter_by_id(shelter_id)
+    return response
 
 # def put_shelter_by_id(shelter):
-#     shelter_id = shelter['ShelterID']
-#     response = table.put_item(
-#         Item=shelter
-#     )
-#     return response
+#     
 
 
 def delete_shelter(shelter_id):
@@ -118,25 +102,21 @@ def delete_shelter(shelter_id):
 
 
 def get_all_users():
-    response = user_table.scan()
+    response = client_table.scan()
     return response.get('Items', [])
 
 def get_user_by_username(username):
-    response = user_table.get_item(Key={'username': username})  
+    response = client_table.get_item(Key={'username': username})  
     return response.get('Item', {})
 
-def post_user(user: User):
-    user_item = user.model_dump()  
-    print("User Item:", user_item)  
+def post_user(user: ClientPost):
+    user.id = str(uuid.uuid4())
+    client_table.put_item(Item=user.dict())
+    return user
 
-    if 'username' not in user_item:
-        raise ValueError("Error: 'username' is missing from user_item!")
-
-    existing_user = get_user_by_username(user_item['username'])
-    if existing_user:
-        raise ValueError(f"User with username {user_item['username']} already exists.")
-
-    user_table.put_item(Item=user_item)
+def check_password(user: ClientLogin):
+    user.id = str(uuid.uuid4())
+    client_table.put_item(Item=user.dict())
     return user
 
 
@@ -152,7 +132,7 @@ def update_user(username, updates):
 
     update_expression = update_expression.rstrip(', ')
 
-    user_table.update_item(
+    client_table.update_item(
         Key={'username': username},  
         UpdateExpression=update_expression,
         ExpressionAttributeValues=expression_attribute_values,
@@ -161,7 +141,7 @@ def update_user(username, updates):
     return get_user_by_username(username)
 
 def delete_user(username):
-    user_table.delete_item(Key={'username': username}) 
+    client_table.delete_item(Key={'username': username}) 
 
  
 # print(get_all_users())

@@ -6,22 +6,30 @@ class Resources(BaseModel):
     food: bool
     
     
+class QueueItem(BaseModel):
+    name: str
+    phone_number: str
+    num_people: int
+    check_in: bool
+
 ## data models
 class Shelter(BaseModel):
     ShelterID: str #     shelter_id = str(uuid.uuid4()) generate the id when creating the shelter
     name: str
     address: str
     capacity: int
-    queue: List[str]
+    curr_cap: int
+    queue: List[QueueItem]
     desc: str
     verif: bool
     type: str
     resources: str
+    summary: str
     # time: int
     
 
 class Client(BaseModel):
-    id: int
+    id: str
     username: str
     password: str
     shelters_ids: List[str]
@@ -40,14 +48,23 @@ class Reservation(BaseModel):
     end_date: str
     f_size: int
     
-
+class ClientPost(BaseModel):
+    id: Optional[str]
+    username: str
+    password: str
+    shelters_ids: Optional[List[str]] = []
+    
+    
+class ClientLogin(BaseModel):
+    username: str
+    password: str
 
 class ShelterPost(BaseModel):
     ShelterID: Optional[str]
     name: str
     address: str
     capacity: int
-    # queue: int
+    queue: Optional[List[List[str]]] = []
     desc: str
     type: str
     verif: Optional[bool]

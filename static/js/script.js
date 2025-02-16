@@ -60,13 +60,16 @@ function updateShelters(shelters) {
     function displayShelters(filter) {
         shelterContainer.innerHTML = "";
         shelters = Object.values(shelters);
-        console.log(shelters);
+
+        console.log("Filtering shelters:", filter);
         
-        shelters.filter(shelter => filter === 'All' || shelter.type === filter)
-            .sort((a, b) => parseFloat(a.time) - parseFloat(b.time))
-            .forEach(shelter => {
-                console.log(shelter);
-                console.log(shelter.type);
+        shelters.filter(shelter => 
+            filter === 'All' || shelter.type.trim().toLowerCase() === filter.trim().toLowerCase()
+        )
+        .sort((a, b) => parseFloat(a.time) - parseFloat(b.time))
+        .forEach(shelter => {
+            console.log("Displaying shelter:", shelter.type);
+    
 
                 const shelterBox = document.createElement("div");
                 shelterBox.classList.add("shelter-box");
@@ -74,17 +77,24 @@ function updateShelters(shelters) {
                     <div class="shelter-content">
                         <div class="shelter-info">
                             <input type="hidden" id="shelterID" value="${shelter.ShelterID}">
-                            <h3 class="shelter-name">${shelter.name}</h3>
+                            <h3 class="shelter-name">${shelter.name} ${shelter.verif ? '<span class="verified-badge">✔</span>' : ''}</h3>
                             <p><strong>Distance:</strong> ${shelter.time} minutes</p>
                             <p><strong>People:</strong> ${shelter.people}</p>
                             <p><strong>Address:</strong> ${shelter.address}</p>
                             <p><strong>Description:</strong> ${shelter.description}</p>
-                            <p><strong>Type:</strong> ${shelter.type}</p>
-                            ${shelter.verif ? '<span class="verified-badge">✔</span>' : ''}
+                            <p><strong>Type:</strong> ${shelter.type}</p> 
                             <div class="shelter-buttons">
                                 <button class="more-info" 
-                                    onclick="showDetails('${shelter.name}', '${shelter.time}', '${shelter.people}', '${shelter.address}', '${shelter.description}', '${shelter.resources}')">
-                                    More Info
+                                onclick="showDetails(
+                                    '${shelter.name}', 
+                                    '${shelter.time}', 
+                                    '${shelter.people}', 
+                                    '${shelter.address}', 
+                                    '${shelter.description}', 
+                                    '${shelter.resources}', 
+                                    '${shelter.type}'
+                                )">
+                                More Info
                                 </button>
                                 <button class="rsvp" onclick="rsvpPopup()">Reserve</button>
                             </div>
@@ -147,21 +157,23 @@ function rsvpPopup() {
     popupRSVP.style.display = "block";
 }
 
-function submitRSVP() {
+function submitRSVP(event) {
+    event.preventDefault();
     const phoneNumber = document.getElementById("phoneNumber").value;
     const numPeople = document.getElementById("numPeople").value;
     const name = document.getElementById("userName").value;
     popupRSVP.style.display = "none";
     const shelterId = document.querySelector("#shelterID").value; // Assuming you have a hidden input field with the shelter ID
-    fetch(`/reserve/${shelterId},${phoneNumber},${numPeople},${name}`, {
-        method: 'POST',
+    console.log(shelterId);
+    fetch("/reserve", {
+        method: "POST",
         headers: {
-            'Content-Type': 'application/json'
+            "Content-Type": "application/json"
         },
         body: JSON.stringify({
             shelter_id: shelterId,
             phone_number: phoneNumber,
-            num_people: numPeople,
+            num_people: parseInt(numPeople),
             name: name
         })
     })
@@ -179,16 +191,12 @@ function submitRSVP() {
         console.error('Error making reservation:', error);
         alert('Error making reservation. Please try again.');
     });
-    // post request
-}
-
-function closeRSVPPopup() {
-    popupRSVP.style.display = "none";
 }
 
 const popup = document.getElementById("popup");
 
-function showDetails(name, distance, people, address, description, resources) {
+function showDetails(name, distance, people, address, description, resources, type) {
+    const popup = document.getElementById("popup");
     const popupTitle = document.getElementById("popupTitle");
     const popupDistance = document.getElementById("popupDistance");
     const popupPeople = document.getElementById("popupPeople");
@@ -196,7 +204,8 @@ function showDetails(name, distance, people, address, description, resources) {
     const popupDescription = document.getElementById("popupDescription");
     const popupResources = document.getElementById("popupResources");
     const popupAISummary = document.getElementById("popupAISummary");
-    const popupReserveButton = document.getElementById("popupReserve"); 
+    const popupReserveButton = document.getElementById("popupReserve");
+    const popupIcon = document.getElementById("popupIcon"); 
 
     popupTitle.textContent = name;
     popupDistance.textContent = `Distance: ${distance} minutes`;
@@ -204,32 +213,59 @@ function showDetails(name, distance, people, address, description, resources) {
     popupAddress.textContent = `Address: ${address}`;
     popupDescription.textContent = description;
     popupResources.textContent = resources;
-    popupAISummary.textContent = "(Still to implement)";
+    popupAISummary.textContent = "(Coming Soon)";
 
-    popupReserveButton.setAttribute("onclick", `rsvpShelter('${name}', '${address}')`);
-    document.getElementById("popup").style.display = "flex";
 
-    // Set the icon based on shelter type
+    type = type.trim().toLowerCase(); // Remove spaces, ensure lowercase
+
     let iconHTML = "";
-    if (type === "Hospital") {
-        iconHTML = "🏥"; // Hospital Icon
-    } else if (type === "School") {
-        iconHTML = "🏫"; // School Icon
-    } else if (type === "Home") {
-        iconHTML = "🏠"; // Home Icon
-    } else if (type === "Homeless Shelter") {
-        iconHTML = "🛌"; // Shelter Icon
-    } else {
-        iconHTML = "❓"; // Default/Fallback Icon
+    switch (type) {
+        case "hospital":
+            iconHTML = "🏥"; // ✅ Hospital Icon
+            break;
+        case "school":
+            iconHTML = "🏫"; // ✅ School Icon
+            break;
+        case "home":
+            iconHTML = "🏠"; // ✅ Home Icon
+            break;
+        case "homeless shelter":
+            iconHTML = "🛌"; // ✅ Shelter Icon
+            break;
+        default:
+            iconHTML = "❓"; // ✅ Default/Fallback Icon
+            console.error(`Unknown shelter type: '${type}'`);
+            break;
     }
-    popupIcon.innerHTML = iconHTML; // Insert the icon
 
-    // Show the popup
-    document.getElementById("popup").style.display = "flex";
-    popup.style.display = "flex";
-};
+
+    if (popupIcon) {
+        popupIcon.innerHTML = iconHTML;
+    } else {
+        console.error("popupIcon element not found!");
+    }
+
     
+    if (popup) {
+        popup.style.display = "flex";
+    }
+}
+
 function closePopup() {
-    popup.style.display = "none";
+    const popup = document.getElementById("popup");
+    if (popup) {
+        popup.style.display = "none";
+    } else {
+        console.error("Popup not found!");
+    }
+}
+
+function closeRSVPPopup() {
+    const popupRSVP = document.getElementById("popupRSVP");
+    if (popupRSVP) {
+        popupRSVP.style.display = "none";
+    } else {
+        console.error("RSVP popup not found!");
+    }
 }
 

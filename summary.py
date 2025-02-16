@@ -1,32 +1,47 @@
-import httpx
-import os
+# import boto3
+# import os
+# from dotenv import load_dotenv
+# from aws import get_all_shelters
 
-# Load API key from environment variable
-API_KEY = "os.getenv("PERPLEXITY_API_KEY")"
+# load_dotenv()
 
-# Ensure API key is available
-if not API_KEY:
-    raise ValueError("Error: PERPLEXITY_API_KEY is not set.")
+# def gen_summary(shelter_name, queue, curr_cap, capacity, resources, type):
+#     access_key_id = os.getenv("AWS_ACCESS_KEY_ID")
+#     secret_access_key = os.getenv("AWS_SECRET_ACCESS_KEY")
 
-# Define API endpoint
-API_URL = "https://api.perplexity.ai/chat/completions"
+#     client = boto3.client(
+#         service_name="bedrock-runtime",
+#         aws_access_key_id=access_key_id,
+#         aws_secret_access_key=secret_access_key,
+#         region_name="us-west-2",
+#     )
 
-# Define request payload
-payload = {
-    "model": "sonar-pro",  # Use "sonar-small" if you need a lighter model
-    "messages": [
-        {"role": "system", "content": "You are an AI assistant."},
-        {"role": "user", "content": "How many stars are in the universe?"}
-    ],
-}
+#     input_text = f"""
+#     The following is information about the emergency shelter named {shelter_name}:
 
-# Send request to Perplexity API
-headers = {"Authorization": f"Bearer {API_KEY}", "Content-Type": "application/json"}
+#     - **Queue** (people waiting/on their way): {queue}
+#     - **Current Capacity** (people staying): {curr_cap}/{capacity}
+#     - **Available Resources**: {resources}
+#     - **Shelter Type**: {type}
 
-response = httpx.post(API_URL, json=payload, headers=headers)
+#     Generate a concise and actionable summary to help this shelter prepare for incoming residents and optimize its resources for emergency preparedness.
+#     """
 
-# Check if request was successful
-if response.status_code == 200:
-    print(response.json()["choices"][0]["message"]["content"])
-else:
-    print(f"Error {response.status_code}: {response.text}")
+#     message = {
+#         "role": "user",
+#         "content": [{"text": input_text}]
+#     }
+
+#     messages = [message]
+#     model_id = "claude-3-5-haiku-20241022"
+
+#     response = client.converse(
+#         modelId=model_id,
+#         messages=messages
+#     )
+
+#     return response['output']['message']['content']
+
+# name = "Catholic Charities"
+
+# print(gen_summary(name, 10, 50, 100, "food and water", "hospital"))

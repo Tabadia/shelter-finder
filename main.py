@@ -49,7 +49,7 @@ def add_to_queue(shelter_id, phone_number, num_people, name):
     shelter = Shelter(**shelter_data)
     shelter.queue.append(reservation)
     # move to where user is checked in
-    if shelter.curr_cap == shelter.capacity:
+    if shelter.curr_cap >= shelter.capacity:
         raise HTTPException(status_code=400, detailE="Shelter is full")
     #shelter.summary = gen_summary(shelter.name, shelter.queue, shelter.curr_cap, shelter.capacity, shelter.resources, shelter.type)
     print(shelter)
@@ -219,7 +219,9 @@ async def get_location(lat: float, lon: float):
 async def view_queue(shelter):
     #returns the total number of people currently in a reservation and AI generated summary
     current_num_queue = queue_count(shelter)
-    open_seats_left = shelter.capacity - shelter.curr_cap
+    if shelter.capacity < shelter.curr_cap:
+        return {"message": "Error, not enough room"}
+    open_seats_left = shelter.capacity - shelter.curr_cap 
     total_queue = open_seats_left - current_num_queue
     summary = gen_summary(shelter.name, shelter.queue, shelter.curr_cap, shelter.capacity, shelter.resources, shelter.type)
     return current_num_queue, open_seats_left, total_queue, summary 

@@ -31,7 +31,9 @@ function updateShelters(shelters) {
         .forEach(shelter => {
             console.log("Displaying shelter:", shelter.type);
     
-
+            //if (shelterContainer.innerHTML === "") {
+                //shelterContainer.innerHTML = "<p style='color: gray; font-size: 18px;'>No shelters available.</p>";
+            //}
                 const shelterBox = document.createElement("div");
                 shelterBox.classList.add("shelter-box");
 
@@ -39,31 +41,31 @@ function updateShelters(shelters) {
 
                 // Escape backticks and quotes
                 let escapedSummary = summaryMultiline.replace(/`/g, '\\`').replace(/"/g, '\\"');
-                console.log(shelter.SHelte)
+                console.log(shelter.ShelterID);
                 shelterBox.innerHTML = `
                     <div class="shelter-info">
                         <div class="name">${getFontAwesomeIcon(shelter.type)} 
                             ${shelter.name}
-                            ${shelter.verif ? '<span class="fa-regular fa-circle-check verified"></span>' : ''}
+                            ${shelter.verif ? '<span class=\"fa-regular fa-circle-check verified\"></span>' : ''}
                         </div>
                         <div class="stats">
                             <span class="capacity">
                                 <i class="fa-solid fa-people-group"></i>
                                 <span>${shelter.capacity - shelter.curr_cap}</span>
                             </span>
-                            <span class="time">
-                                <i class="fa-solid fa-stopwatch"></i>
+                            <span class=\"time">
+                                <i class="fa-solid fa-stopwatch\"></i>
                                 <span>${shelter.time}min</span>
                             </span>
-                            <span class="address">
-                                <i class="fa-solid fa-location-dot"></i>
+                            <span class=\"address">
+                                <i class="fa-solid fa-location-dot\"></i>
                                 <span>${shelter.address}</span>
                             </span>
                         </div>
                         <div class="shelter-buttons">
                             <button class="more-info" 
                             onclick="showDetails(
-                                '${shelter.name} ${shelter.verif ? '<i class="fa-regular fa-circle-check verified"></i>' : ''}', 
+                                '${shelter.name}' ${shelter.verif ? '<i class=\"fa-regular fa-circle-check verified\"></i>' : ''}', 
                                 '${shelter.time}', 
                                 '${shelter.capacity - shelter.curr_cap}', 
                                 '${shelter.address}', 
@@ -81,9 +83,12 @@ function updateShelters(shelters) {
                         <img src="../static/images/${shelter.image}" alt="">
                     </div>
                 `;
-
                 shelterContainer.appendChild(shelterBox);
-            });
+        });
+        
+        if (shelterContainer.innerHTML === "") {
+                shelterContainer.innerHTML = "<p style='color: gray; font-size: 18px;'>No shelters available.</p>";
+        }
     }
 
     window.filterShelters = displayShelters;
@@ -197,7 +202,7 @@ function showDetails(name, distance, people, address, description, resources, ty
     popupAISummary.textContent = summary;
 
 
-    type = type.trim().toLowerCase(); // Remove spaces, ensure lowercase
+    type = type.trim().toLowerCase(); 
 
     let iconHTML = "";
     switch (type) {
@@ -213,13 +218,14 @@ function showDetails(name, distance, people, address, description, resources, ty
         case "homeless shelter":
             iconHTML = "<i class=\"fa-solid fa-bed\"></i>"; 
             break;
+        case "other":
+            iconHTML = "<i class='fa-solid fa-question'></i>"; 
+            break;
         default:
-            iconHTML = "<i class=\"fa-solid fa-question\"></i>"; 
             console.error(`Unknown shelter type: '${type}'`);
+            iconHTML = "<i class='fa-solid fa-question'></i>";
             break;
     }
-
-
     if (popupIcon) {
         popupIcon.innerHTML = iconHTML;
     } else {
@@ -234,6 +240,7 @@ function showDetails(name, distance, people, address, description, resources, ty
         document.getElementById("popup").style.visibility = "visible";
         // popup.style.display = "flex"; 
     }
+    popup.style.display = "block";
 }
 
 function closePopup() {

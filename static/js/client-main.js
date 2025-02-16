@@ -85,7 +85,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                             <input type="hidden" id="shelterID" value="${shelter.ShelterID}">
                             <div class="name">${getFontAwesomeIcon(shelter.type)} 
                                 ${shelter.name}
-                                ${shelter.verif ? '<span class="fa-regular fa-circle-check verified"></span>' : ''}
+                                ${shelter.verif ? '<span class=\"fa-regular fa-circle-check verified\"></span>' : ''}
                             </div>
                             <div class="stats">
                                 <span class="capacity">

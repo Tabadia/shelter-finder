@@ -204,3 +204,13 @@ button:hover {
 #addShelterForm button[type="submit"]:hover {
     background-color: #45a049;
 }
+
+
+@media (hover: none) {
+    .filterbtns button:hover {
+        background: #FF6961 !important; /* Reset hover color */
+        color: white !important;
+    }
+}
+
+

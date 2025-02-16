@@ -77,7 +77,7 @@ function updateShelters(shelters) {
                     <div class="shelter-content">
                         <div class="shelter-info">
                             <input type="hidden" id="shelterID" value="${shelter.ShelterID}">
-                            <h3 class="shelter-name">${shelter.name} ${shelter.verif ? '<span class="verified-badge">✔</span>' : ''}</h3>
+                            <h3 class="shelter-name">${shelter.name} ${shelter.verif ? '<span class="fa-regular fa-circle-check"></span>' : ''}</h3>
                             <p><strong><i class="fa-solid fa-person-walking-arrow-right"></i>  </i>  Distance:</strong> ${shelter.time} minutes</p>
                             <p><strong><i class="fa-solid fa-people-group"></i>  Capacity:</strong> ${shelter.capacity - shelter.curr_cap}</p>
                             <p><strong><i class="fa-solid fa-location-dot"></i>  Address:</strong> ${shelter.address}</p>
@@ -202,12 +202,14 @@ function showDetails(name, distance, people, address, description, resources, ty
     const popupTitle = document.getElementById("popupTitle");
     const popupDistance = document.getElementById("popupDistance");
     const popupPeople = document.getElementById("popupPeople");
-    const popupAddress = document.getElementById("popupAddress");
-    const popupDescription = document.getElementById("popupDescription");
+    const popupAddress = document.getElementById("popupAddress"); 
+    const popupDescription = document.getElementById("popupDescription"); 
     const popupResources = document.getElementById("popupResources");
     const popupAISummary = document.getElementById("popupAISummary");
     const popupReserveButton = document.getElementById("popupReserve");
     const popupIcon = document.getElementById("popupIcon"); 
+
+    console.log('inittt', popup, popupIcon);
 
     popupTitle.textContent = name;
     popupDistance.textContent = `Distance: ${distance} minutes`;

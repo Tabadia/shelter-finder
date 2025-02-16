@@ -29,7 +29,7 @@
             <button onclick="filterShelters('Homeless Shelter')">Homeless Shelters</button>
             <button onclick="filterShelters('Other')">Other</button>
         </div>
-        
+         
         <div class="content-container">
             <h2>Available Shelters</h2>
             <div id="shelterContainer" class="shelter-container">Loading...</div>
@@ -43,10 +43,12 @@
             <h2 id="popupTitle"></h2>
             <p><i class="fa-solid fa-person-walking-arrow-right"></i> <strong>Distance:</strong> <span id="popupDistance"></span></p>
             <p><i class="fa-solid fa-people-group"></i> <strong>People:</strong> <span id="popupPeople"></span></p>
-            <p><i class="fa-solid fa-location-dot"></i> <strong>Address:</strong> <span id="popupPeople"></span></p>
+            <p><i class="fa-solid fa-location-dot"></i> <strong>Address:</strong> <span id="popupAddress"></span></p>
             <p><i class="fa-solid fa-book"></i> <strong>Desciption:</strong> <span id="popupPeople"></span></p>
+
             <p><strong>Resources:</strong> <span id="popupResources"></span></p>
             <p><strong>AI Summary:</strong> <span id="popupAISummary">(Coming Soon)</span></p>
+            
             <button id="popupReserve" onclick="rsvpPopup()">Reserve</button>
         </div>
     </div>

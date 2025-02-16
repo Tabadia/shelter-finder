@@ -209,10 +209,22 @@ async def get_headcount(shelter_id: int):
 @app.get("/location/{lat},{lon}")
 async def get_location(lat: float, lon: float):
     shelter_data = get_all_shelters()
+    print("Checkpoint 1")
     for s in shelter_data:
+        print("Beginning of getting times for each shelter")
         time = get_radar_time(lat, lon, s["address"])
+        print("Checkpoint for when a shelter time was found")
         s["time"] = time
+        print("Checkpoint for updating the shelter time attribute")
     
+    print("Last checkpoint")
     return shelter_data
     
-
+@app.post("/view-queue/{shelter}")
+async def view_queue(shelter):
+    #returns the total number of people currently in a reservation and AI generated summary
+    current_num_queue = queue_count(shelter)
+    open_seats_left = shelter.capacity - shelter.curr_cap
+    total_queue = open_seats_left - current_num_queue
+    summary = gen_summary(shelter.name, shelter.queue, shelter.curr_cap, shelter.capacity, shelter.resources, shelter.type)
+    return current_num_queue, open_seats_left, total_queue, summary 

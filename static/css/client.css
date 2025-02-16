@@ -208,7 +208,7 @@ button:hover {
 
 @media (hover: none) {
     .filterbtns button:hover {
-        background: #FF6961 !important; /* Reset hover color */
+        background: #FF6961 !important; 
         color: white !important;
     }
 }

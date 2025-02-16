@@ -131,7 +131,7 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 function switchToClient() {
-    window.location.href = "/client-login"; // Adjust the path based on your actual client-side URL
+    window.location.href = "/client-login"; 
 }
 
 const popupRSVP = document.getElementById("popupRSVP");

@@ -39,7 +39,7 @@ async function fetchSignup(username, password) {
                     break;
                 default:
                     console.log("Login failed");
-                    errorMessage.style.display = "block"; // Show error message
+                    errorMessage.style.display = "block"; 
                     errorMessage.textContent = "Account already exists!";
                 }
         });
@@ -50,10 +50,8 @@ async function fetchSignup(username, password) {
 
 document.addEventListener("DOMContentLoaded", function () {
     console.log("DOM loaded");
-
-    // Add event listener to the form
     document.getElementById('signupForm').addEventListener('submit', async function(event) {
-        event.preventDefault(); // Prevent default form submission behavior
+        event.preventDefault(); 
 
         const username = document.getElementById('signupUser').value;
         const password = document.getElementById('signupPass').value;

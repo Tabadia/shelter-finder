@@ -123,7 +123,7 @@ function closeQueuePopup() {
 
 document.getElementById('addShelterForm').addEventListener('submit', function(event) {
     event.preventDefault();
-    // Here you would send the form data to your backend to create a new shelter
+
     const formData = new FormData(this);
     const username = localStorage.getItem('username');
     formData.append('owner_username', username);

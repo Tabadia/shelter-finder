@@ -4,10 +4,10 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from fastapi.responses import FileResponse
 from models import Shelter, User, Reservation, ShelterPost, ShelterUpdate, UserUpdate, ReservationUpdate, Location, QueueItem, ClientPost, Client, ClientLogin
-from data import shelters, users, reservations
 from aws import get_all_shelters, get_my_shelters, get_shelter_by_id, post_shelter, get_all_users, post_user, get_all_reservations, get_reservation_by_id, post_reservation, update_shelter, check_client_login
-from distance import get_radar_time, geocode, convert_duration_to_minutes
+from distance import get_travel_time, convert_duration_to_minutes
 from summary import gen_summary
+import time
 
 app = FastAPI()
 
@@ -108,6 +108,19 @@ async def read_shelter(shelter_id: str):
         raise HTTPException(status_code=404, detail="Shelter not found")
     return ret
 
+@app.get("/shelters/queue/{shelter_id}")
+async def shelter_queue(shelter_id: str):
+    ret = get_shelter_by_id(shelter_id)
+    qu, check_in = [], []
+    for q in ret["queue"]:
+        if q["check_in"]:
+            check_in.append(q)
+        else:
+            qu.append(q)
+    if not ret:
+        raise HTTPException(status_code=404, detail="Shelter not found")
+    return qu, check_in
+
 @app.post("/shelters/", response_model=Shelter)
 async def create_shelter(shelter: ShelterPost):
     return post_shelter(shelter)
@@ -168,48 +181,11 @@ async def delete_user(user_id: int):
     delete_user(user_id)
     return {"message": "User deleted successfully"}
 
-# Reservation Endpoints
-# @app.get("/reservations/", response_model=List[Reservation])
-# async def read_reservations():
-#     return get_all_reservations()
-
-# @app.get("/reservations/{reservation_id}", response_model=Reservation)
-# async def read_reservation(reservation_id: int):
-#     ret = get_reservation_by_id(reservation_id)
-#     if not ret:
-#         raise HTTPException(status_code=404, detail="Reservation not found")
-#     return ret
-
-# @app.post("/reservations/", response_model=Reservation)
-# async def create_reservation(reservation: Reservation):
-#     return post_reservation(reservation)
-
-# @app.put("/reservations/{reservation_id}", response_model=Reservation)
-# async def update_reservation(reservation_id: int, reservation: ReservationUpdate):
-#     return update_reservation(reservation_id, reservation.dict())
-
-# @app.delete("/reservations/{reservation_id}")
-# async def delete_reservation(reservation_id: int):
-#     delete_reservation(reservation_id)
-#     return {"message": "Reservation deleted successfully"}
-
-# Live Headcount Endpoint
-@app.get("/shelters/{shelter_id}/headcount")
-async def get_headcount(shelter_id: int):
-    # This is a placeholder for calculating the headcount based on reservations
-    # For simplicity, it returns a dummy value
-    return {"headcount": 10}
-
-@app.get("/shelters/{shelter_id}/queue")
-async def get_headcount(shelter_id: int):
-    # This is a placeholder for calculating the queue based on reservations
-    # For simplicity, it returns a dummy value
-    return {"queue": 10}
-
+"""
 @app.get("/location/{lat},{lon}")
 async def get_location(lat: float, lon: float):
     shelter_data = get_all_shelters()
-    print("Checkpoint 1")
+    print("Checkpoint 1: Got all shelter data")
     for s in shelter_data:
         print("Beginning of getting times for each shelter")
         time = get_radar_time(lat, lon, s["address"])
@@ -219,8 +195,30 @@ async def get_location(lat: float, lon: float):
     
     print("Last checkpoint")
     return shelter_data
+"""
+
+@app.get("/location/{lat},{lon}")
+async def get_location(lat: float, lon: float):
+    start_time = time.time()
     
-@app.post("/view-queue/{shelter}")
+    shelter_data = get_all_shelters()
+    print(f"Checkpoint 1: Got all shelter data | Time elapsed: {time.time() - start_time:.2f} seconds")
+
+    for idx, s in enumerate(shelter_data):
+        loop_start_time = time.time()
+        print(f"Beginning of getting times for shelter {idx + 1} | Time elapsed: {time.time() - start_time:.2f} seconds")
+        
+        time_taken = get_travel_time(lat, lon, s["address"])
+        print(f"Checkpoint: Shelter {idx + 1} time found | Time elapsed: {time.time() - start_time:.2f} seconds | Time for this shelter: {time.time() - loop_start_time:.2f} seconds")
+        
+        s["time"] = time_taken
+        print(f"Checkpoint: Shelter {idx + 1} time updated | Time elapsed: {time.time() - start_time:.2f} seconds")
+
+    print(f"Last checkpoint | Total execution time: {time.time() - start_time:.2f} seconds")
+
+    return shelter_data
+    
+@app.get("/view-queue/{shelter}")
 async def view_queue(shelter):
     #returns the total number of people currently in a reservation and AI generated summary
     current_num_queue = queue_count(shelter)

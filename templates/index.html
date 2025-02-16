@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sheltr </title>
+    <title>Sheltr</title>
     <link rel="icon" type="image/x-icon" href="../static/images/favicon.ico">
     <link rel="stylesheet" href="../static/css/styles.css">
     <script src="../static/js/script.js" defer></script>
@@ -15,19 +15,21 @@
             <img src="../static/images/sheltrlogo.png" alt="Sheltr Logo">
         </div>
         <div class="client-switch">
-            <button onclick="switchToClient()">Client Log-In</button>
+            <button onclick="switchToClient()">Client Login</button>
         </div>
     </header>
     
     <div class="main-container">
         <div class="filter-container">
             <h3>Filter by Type</h3>
-            <button onclick="filterShelters('All')">All</button>
-            <button onclick="filterShelters('Hospital')">Hospitals</button>
-            <button onclick="filterShelters('School')">Schools</button>
-            <button onclick="filterShelters('Home')">Homes</button>
-            <button onclick="filterShelters('Homeless Shelter')">Homeless Shelters</button>
-            <button onclick="filterShelters('Other')">Other</button>
+            <div class="filterbtns">
+                <button onclick="filterShelters('All')">All</button>
+                <button onclick="filterShelters('Hospital')">Hospitals</button>
+                <button onclick="filterShelters('School')">Schools</button>
+                <button onclick="filterShelters('Home')">Homes</button>
+                <button onclick="filterShelters('Homeless Shelter')">Homeless Shelters</button>
+                <button onclick="filterShelters('Other')">Other</button>
+            </div>
         </div>
          
         <div class="content-container">
@@ -40,13 +42,13 @@
         <div class="popup-content">
             <span class="close" onclick="closePopup()">&times;</span>
             <p><span id="popupIcon"></span></p>
-            <h2 id="popupTitle"></h2>
+            <h2 id="popupTitle" class="popup-title"></h2>
             <p><i class="fa-solid fa-person-walking-arrow-right"></i> <strong>Distance:</strong> <span id="popupDistance"></span></p>
             <p><i class="fa-solid fa-people-group"></i> <strong>People:</strong> <span id="popupPeople"></span></p>
-            <p><i class="fa-solid fa-location-dot"></i> <strong>Address:</strong> <span id="popupAddress"></span></p>
-            <p><i class="fa-solid fa-book"></i> <strong>Desciption:</strong> <span id="popupPeople"></span></p>
+            <p><i class="fa-solid fa-location-dot"></i>  <strong>Address:</strong> <span id="popupAddress"></span></p>
+            <p><i class="fa-solid fa-book"></i>  <strong>Description:</strong> <span id="popupDescription"></span></p>
 
-            <p><strong>Resources:</strong> <span id="popupResources"></span></p>
+            <p><i class="fa-solid fa-suitcase-medical"></i>   <strong>Resources:</strong> <span id="popupResources"></span></p>
             <p><strong>AI Summary:</strong> <span id="popupAISummary">(Coming Soon)</span></p>
             
             <button id="popupReserve" onclick="rsvpPopup()">Reserve</button>

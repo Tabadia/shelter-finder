@@ -57,7 +57,18 @@ h2 {
     color: #333;
     margin-bottom: 15px;
 }
-#viewQueueButton {
+
+/* Button Container */
+.button-container {
+    display: flex;
+    justify-content: center;
+    gap: 10px; /* Space between buttons */
+    margin-top: 10px;
+}
+
+/* Queue and Shelter Buttons */
+#viewQueueButton,
+#addShelterButton {
     background-color: #ff6861;
     color: white;
     border: none;
@@ -68,10 +79,14 @@ h2 {
     transition: all 0.3s ease;
     box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
 }
-#viewQueueButton:hover {
-    background-color: #ff6861;
+
+#viewQueueButton:hover,
+#addShelterButton:hover {
+    background-color: #e04e2a;
     transform: scale(1.05);
 }
+
+/* Form Styling */
 #queueContainer {
     margin-top: 25px;
     display: none;
@@ -79,6 +94,7 @@ h2 {
     justify-content: space-around;
     gap: 30px;
 }
+
 .column {
     width: 45%;
     background: #fff;
@@ -87,10 +103,12 @@ h2 {
     box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
     text-align: left;
 }
+
 ul {
     list-style: none;
     padding: 0;
 }
+
 li {
     background: #e9ecef;
     margin: 8px 0;
@@ -99,6 +117,7 @@ li {
     font-weight: bold;
     transition: background 0.3s;
 }
+
 li:hover {
     background: #d6d8db;
 }
@@ -107,12 +126,14 @@ label {
     display: block;
     margin-bottom: 10px;
 }
+
 input, textarea {
     width: 100%;
     padding: 10px;
     margin-bottom: 20px;
     border: 1px solid #ccc;
 }
+
 button[type="submit"] {
     padding: 10px;
     background-color: #ff6861;
@@ -121,8 +142,9 @@ button[type="submit"] {
     border-radius: 5px;
     cursor: pointer;
 }
+
 button[type="submit"]:hover {
-    background-color: #ff6861;
+    background-color: #e04e2a;
 }
 
 #addShelterForm {
@@ -163,5 +185,92 @@ button[type="submit"]:hover {
 }
 
 #addShelterForm button[type="submit"]:hover {
-    background-color: #ff6861;
+    background-color: #e04e2a;
+}
+
+#shelterContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.shelter-image {
+    height: 0px;
+}
+
+.shelter-box {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+    text-align: left;
+    transition: transform 0.3s;
+    width: 500px;
+    max-width: 90%;
+}
+
+.shelter-box:hover {
+    transform: scale(1.05);
+}
+
+.shelter-box .name {
+    padding: 0 0 5px;
+    font-size: 20px;
+    display: flex;
+    flex-direction: row;
+    border-bottom: 1px solid black;
+    font-weight: bolder;
+}
+
+.shelter-box .name i {
+    margin-right: 5px;
+}
+
+.shelter-box .name .verified {
+    margin-left: auto;
+}
+
+.shelter-box .stats {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin-top: 2px;
+    font-size: 14px;
+    color: black;
+    font-weight: bolder;
+}
+
+.stats i {
+    margin-right: 2px;
+}
+
+.stats span {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    margin-right: 8px;
+}
+
+.shelter-buttons {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.shelter-box button {
+    background: #FF6961;
+    color: white;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    width: 45%;
+    border-radius: 5px;
+    transition: background 0.3s;
+}
+
+.shelter-box button:hover {
+    background: #e04e2a;
 }

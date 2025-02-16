@@ -6,6 +6,7 @@
     <link rel="icon" type="image/x-icon" href="../static/images/favicon.ico">
     <title>Client Main</title>
     <link rel="stylesheet" href="../static/css/dashboard.css">
+    <script src="https://kit.fontawesome.com/3918e3cf8d.js" crossorigin="anonymous"></script>
 
 </head>
 <body>
@@ -17,12 +18,14 @@
         </div>
     </header>
     <div class="container">
-        <h2>My Shelters</h2>
-        <input type="hidden" id="clientUsername" name="clientUsername" value="">
-        <div id="shelterContainer">None</div>
+        <h2>My Sheltrs</h2>
+        <div id="shelterContainer">Loading...</div>
 
-        <button id="addShelterButton" onclick="addShelter()">Add <span style="color: #ff6861;">Sheltr</span></button>
-
+    <div class="button-container">
+        <button id="addShelterButton" class="styled-button" onclick="addShelter()">Add Sheltr</button>
+        <!-- <button id="viewQueueButton" class="styled-button" onclick="toggleQueue()">View Queue</button> -->
+    </div>
+        
         
         <form id="addShelterForm" style="display:none;">
             <label for="name">Shelter Name:</label>
@@ -54,7 +57,15 @@
             <button type="submit">Submit</button>
         </form>
         
-        <button id="viewQueueButton" onclick="toggleQueue()">View Queue</button>
+        <!-- <button id="viewQueueButton" onclick="toggleQueue()">View Queue</button> -->
+
+        <div id="popup" class="popup">
+            <div class="popup-content">
+                <span class="close" onclick="closePopup()">&times;</span>
+                <p><span id="popupIcon"></span></p>
+                <h2 id="popupTitle" class="popup-title"></h2>                
+            </div>
+        </div>
         
         <div id="queueContainer">
             <div class="column">
@@ -68,12 +79,6 @@
         </div>
     </div>
     
-    <script>
-        function toggleQueue() {
-            const queueContainer = document.getElementById('queueContainer');
-            queueContainer.style.display = (queueContainer.style.display === 'none' || queueContainer.style.display === '') ? 'flex' : 'none';
-        }
-    </script>
 
     <script src="../static/js/client-main.js"></script>
 </body>

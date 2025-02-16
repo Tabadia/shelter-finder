@@ -1,42 +1,3 @@
-    // ZZfetchUserLocation();
-
-
-// document.addEventListener("DOMContentLoaded", function () {
-//     console.log('DOM loaded');
-//     async function fetchUserLocation() {
-//         console.log('Fetching user location');
-//         console.log(navigator.geolocation);
-//         // if (navigator.geolocation) {
-//         //     navigator.geolocation.getCurrentPosition(async function(position) {
-//         //         const lat = parseFloat(position.coords.latitude);
-//         //         const lon = parseFloat(position.coords.longitude);
-//         //         console.log('User location:', lat, lon);
-//         //         try {
-//         //             const url = `http://localhost:8000/location/${lat},${lon}`; // Replace with your actual API URL
-//         //             const response = await fetch(url);
-                    
-//         //             if (!response.ok) {
-//         //                 throw new Error(`HTTP error! status: ${response.status}`);
-//         //             }
-                    
-//         //             const data = await response.json();
-//         //             console.log('User location data:', data);
-//         //             // You can now use the data as needed
-//         //         } catch (error) {
-//         //             console.error('Error fetching user location data:', error);
-//         //         }
-//         //     }, function(error) {
-//         //         console.error('Error getting user location:', error);
-//         //     });
-//         // }
-//         // else {
-//         //     console.log('Geolocation is not supported by this browser.');
-//         // }
-//     }
-
-//     fetchUserLocation();
-// });
-
 function formatTime(minutes) {
     const days = Math.floor(minutes / 1440);
     const hours = Math.floor((minutes % 1440) / 60);
@@ -74,34 +35,44 @@ function updateShelters(shelters) {
                 const shelterBox = document.createElement("div");
                 shelterBox.classList.add("shelter-box");
                 shelterBox.innerHTML = `
-                    <div class="shelter-content">
-                        <div class="shelter-info">
-                            <input type="hidden" id="shelterID" value="${shelter.ShelterID}">
-                            <h3 class="shelter-name">${shelter.name} ${shelter.verif ? '<span class="fa-regular fa-circle-check"></span>' : ''}</h3>
-                            <p><strong><i class="fa-solid fa-person-walking-arrow-right"></i>  </i>  Distance:</strong> ${shelter.time} minutes</p>
-                            <p><strong><i class="fa-solid fa-people-group"></i>  Capacity:</strong> ${shelter.capacity - shelter.curr_cap}</p>
-                            <p><strong><i class="fa-solid fa-location-dot"></i>  Address:</strong> ${shelter.address}</p>
-                            <p><strong><i class="fa-solid fa-book"></i>  Description:</strong> ${shelter.description}</p>
-                            <p><strong><i class="fa-solid fa-bookmark"></i>  Type:</strong> ${shelter.type}</p> 
-                            <div class="shelter-buttons">
-                                <button class="more-info" 
-                                onclick="showDetails(
-                                    '${shelter.name} ${shelter.verif ? '✔' : ''}', 
-                                    '${shelter.time}', 
-                                    '${shelter.capacity - shelter.curr_cap}', 
-                                    '${shelter.address}', 
-                                    '${shelter.description}', 
-                                    '${shelter.resources}', 
-                                    '${shelter.type}'
-                                )">
-                                More Info
-                                </button>
-                                <button class="rsvp" onclick="rsvpPopup()">Reserve</button>
-                            </div>
+                    <div class="shelter-info">
+                        <input type="hidden" id="shelterID" value="${shelter.ShelterID}">
+                        <div class="name">${getFontAwesomeIcon(shelter.type)} 
+                            ${shelter.name}
+                            ${shelter.verif ? '<span class="fa-regular fa-circle-check verified"></span>' : ''}
                         </div>
-                        <div class="shelter-image">
-                            <img src="../static/images/${shelter.image}" alt="">
+                        <div class="stats">
+                            <span class="capacity">
+                                <i class="fa-solid fa-people-group"></i>
+                                <span>${shelter.capacity - shelter.curr_cap}</span>
+                            </span>
+                            <span class="time">
+                                <i class="fa-solid fa-stopwatch"></i>
+                                <span>${shelter.time}min</span>
+                            </span>
+                            <span class="address">
+                                <i class="fa-solid fa-location-dot"></i>
+                                <span>${shelter.address}</span>
+                            </span>
                         </div>
+                        <div class="shelter-buttons">
+                            <button class="more-info" 
+                            onclick="showDetails(
+                                '${shelter.name} ${shelter.verif ? '<span class="fa-regular fa-circle-check verified"></span>' : ''}', 
+                                '${shelter.time}', 
+                                '${shelter.capacity - shelter.curr_cap}', 
+                                '${shelter.address}', 
+                                '${shelter.desc}', 
+                                '${shelter.resources}', 
+                                '${shelter.type}'
+                            )">
+                            View Details
+                            </button>
+                            <button class="rsvp" onclick="rsvpPopup()">Reserve</button>
+                        </div>
+                    </div>
+                    <div class="shelter-image">
+                        <img src="../static/images/${shelter.image}" alt="">
                     </div>
                 `;
 
@@ -212,10 +183,10 @@ function showDetails(name, distance, people, address, description, resources, ty
     console.log('inittt', popup, popupIcon);
 
     popupTitle.textContent = name;
-    popupDistance.textContent = `Distance: ${distance} minutes`;
-    popupPeople.textContent = `People: ${people}`;
-    popupAddress.textContent = `Address: ${address}`;
-    popupDescription.textContent = description;
+    popupDistance.textContent = `${distance} minutes`;
+    popupPeople.textContent = `${people}`;
+    popupAddress.textContent = `${address}`;
+    popupDescription.textContent = `${description}`;
     popupResources.textContent = resources;
     popupAISummary.textContent = "(Coming Soon)";
 
@@ -249,9 +220,13 @@ function showDetails(name, distance, people, address, description, resources, ty
         console.error("popupIcon element not found!");
     }
 
-    
+    console.log('should i popup:', popup);
     if (popup) {
-        popup.style.display = "flex";
+        console.log('displayinggg', popup);
+        document.getElementById("popup").style.display = "block";
+        document.getElementById("popup").style.opacity = "1";
+        document.getElementById("popup").style.visibility = "visible";
+        // popup.style.display = "flex"; 
     }
 }
 
@@ -273,3 +248,19 @@ function closeRSVPPopup() {
     }
 }
 
+function getFontAwesomeIcon(type) {
+    type = type.trim().toLowerCase();
+
+    switch (type) {
+        case "hospital":
+            return "<i class=\"fa-solid fa-hospital\"></i>";
+        case "school":
+            return "<i class=\"fa-solid fa-school\"></i>";
+        case "home":
+            return "<i class=\"fa-solid fa-house\"></i>";
+        case "homeless shelter":
+            return "<i class=\"fa-solid fa-bed\"></i>";
+        default:
+            return "<i class=\"fa-solid fa-question\"></i>";
+    }
+}

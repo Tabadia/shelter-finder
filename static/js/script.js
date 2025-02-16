@@ -37,46 +37,72 @@
 //     fetchUserLocation();
 // });
 
+function formatTime(minutes) {
+    const days = Math.floor(minutes / 1440);
+    const hours = Math.floor((minutes % 1440) / 60);
+    const mins = minutes % 60;
+    let timeString = '';
+    if (days > 0) {
+        timeString += `${days} days `;
+    }
+    if (hours > 0) {
+        timeString += `${hours} hours `;
+    }
+    if (mins > 0) {
+        timeString += `${mins} minutes`;
+    }
+    return timeString.trim();
+}
+
 function updateShelters(shelters) {   
     
     const shelterContainer = document.getElementById("shelterContainer");
-    const popup = document.getElementById("popup");
-    const popupTitle = document.getElementById("popupTitle");
-    const popupDescription = document.getElementById("popupDescription");
-    const popupResources = document.getElementById("popupResources");
-    const popupAISummary = document.getElementById("popupAISummary");
-    const popupClose = document.querySelector(".close");
 
     function displayShelters(filter) {
         shelterContainer.innerHTML = "";
         shelters = Object.values(shelters);
         console.log(shelters);
         shelters.filter(shelter => filter === 'All' || shelter.type === filter)
-            .sort((a, b) => parseFloat(a.distance) - parseFloat(b.distance))
+            .sort((a, b) => parseFloat(a.time) - parseFloat(b.time))
             .forEach(shelter => {
-                shelter = shelter[0];
+                // call showDetails(shelter)
+                console.log(shelter);
                 console.log(shelter.type);
+                showDetails(
+                    shelter.name,
+                    shelter.time,
+                    shelter.distance,
+                    shelter.people,
+                    shelter.address,
+                    shelter.description,
+                    shelter.resources
+                );
+            });
                 const shelterBox = document.createElement("div");
                 shelterBox.classList.add("shelter-box");
                 shelterBox.innerHTML = `
                     <div class="shelter-content">
                         <div class="shelter-info">
-                            <h3>${shelter.name}</h3>
-                            <p><strong>Distance:</strong> ${shelter.distance}</p>
+                            <h3 class="shelter-name">${shelter.name}</h3>
+                            <p><strong>Distance:</strong> ${shelter.time} minutes</p>
                             <p><strong>People:</strong> ${shelter.people}</p>
                             <p><strong>Address:</strong> ${shelter.address}</p>
                             <p><strong>Description:</strong> ${shelter.description}</p>
-                            ${shelter.verif ? '<span class="verified-badge">Verified</span>' : ''}
-                            <button class="more-info" 
-                            onclick="showDetails('${shelter.name}', '${shelter.distance}', '${shelter.people}', '${shelter.address}', '${shelter.description}', '${shelter.resources}')">
-                            More Info
-                            </button>
-                            <button class="rsvp" onclick="rsvpPopup()">Reserve</button>
+                            <p><strong>Type:</strong> ${shelter.type}</p>
+                            ${shelter.verif ? '<span class="verified-badge">✔</span>' : ''}
+                            <div class="shelter-buttons">
+                                <button class="more-info" 
+                                    onclick="showDetails('${shelter.name}', '${shelter.time}', '${shelter.people}', '${shelter.address}', '${shelter.description}', '${shelter.resources}')">
+                                    More Info
+                                </button>
+                                <button class="rsvp" onclick="rsvpPopup()">Reserve</button>
+                            </div>
                         </div>
                         <div class="shelter-image">
-                        <img src="../static/images/${shelter.image}" alt="${shelter.type}">  
+                            <img src="../static/images/${shelter.image}" alt"">
                         </div>
                     </div>
+
                 `;
                 shelterContainer.appendChild(shelterBox);
             });
@@ -84,28 +110,7 @@ function updateShelters(shelters) {
 
     window.filterShelters = displayShelters;
     displayShelters('All');
-
-    window.showDetails = function(name, distance, people, address, description, resources) {
-        popupTitle.innerText = name;
-        popupDescription.innerText = `Description: ${description}`;
-        popupResources.innerText = `Resources: ${resources}`;
-        popupAISummary.innerText = "(Coming Soon)";
-        
-        popup.style.display = "flex";
-        popupClose.style.display = "block"; 
     };
-    
-    
-    window.rsvpShelter = function(button) {
-        const type = button.getAttribute("data-type");
-        const address = button.getAttribute("data-address");
-        alert(`You have successfully RSVP'd to ${type} at ${address}.`);
-    };
-    
-    window.closePopup = function() {
-        popup.style.display = "none";
-    }
-};
 
 async function fetchLocation(lat, lon) {
     try {
@@ -114,7 +119,7 @@ async function fetchLocation(lat, lon) {
             throw new Error(`HTTP error! Status: ${response.status}`);
         }
         const data = await response.json();
-            console.log("shelters:", data);
+        console.log("shelters:", data);
         updateShelters(data);  
         return data;
     } catch (error) {
@@ -141,11 +146,10 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 function switchToClient() {
-    window.location.href = "/client"; // Adjust the path based on your actual client-side URL
+    window.location.href = "/client-login"; // Adjust the path based on your actual client-side URL
 }
 
 const popupRSVP = document.getElementById("popupRSVP");
-// popupRSVP.style.display = "none";
 
 function rsvpPopup() {
     popupRSVP.style.display = "block";
@@ -164,3 +168,29 @@ function closeRSVPPopup() {
     popupRSVP.style.display = "none";
 }
 
+const popup = document.getElementById("popup");
+function showDetails(name, distance, people, address, description, resources) {
+    const popupTitle = document.getElementById("popupTitle");
+    const popupDistance = document.getElementById("popupDistance");
+    const popupPeople = document.getElementById("popupPeople");
+    const popupAddress = document.getElementById("popupAddress");
+    const popupDescription = document.getElementById("popupDescription");
+    const popupResources = document.getElementById("popupResources");
+    const popupAISummary = document.getElementById("popupAISummary");
+
+    popupTitle.textContent = name;
+    popupDistance.textContent = `Distance: ${distance} minutes`;
+    popupPeople.textContent = `People: ${people}`;
+    popupAddress.textContent = `Address: ${address}`;
+    popupDescription.textContent = description;
+    popupResources.textContent = resources;
+    popupAISummary.textContent = "(Coming Soon)";
+
+    popup.style.display = "flex";
+
+};
+    
+    
+function closePopup() {
+    popup.style.display = "none";
+}

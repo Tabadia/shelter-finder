@@ -12,7 +12,7 @@ header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 10px 15px; 
+    padding: 15px 20px; 
     position: relative;
 }
 
@@ -25,16 +25,15 @@ header {
     height: auto;
 }
 
-/* Adjust Client Log-In button */
 .client-switch {
-    position: relative;
-    top: 2px; /* Moves it slightly down */
-    left: 5px;
+    position: absolute;
+    top: 15px;
+    right: 20px; 
 }
-
 .client-switch button {
-    font-size: 12px;  
-    padding: 6px 12px; 
+    font-size: 12px;
+    padding: 6px 14px;
+    border-radius: 5px;
 }
 
 /* clean spacing on mobile */

@@ -34,14 +34,20 @@ def get_all_shelters():
     response = shelter_table.scan()
     return response.get('Items', [])
 
-def get_my_shelters(owner_id: int):
-    response = user_table.get_item(Key={'id': owner_id})
+def get_my_shelters(owner_username: str):
+    response = user_table.get_item(Key={'username': owner_username})
+    print('cc', response)
     item = response.get('Item', {})
     if item:
+        print('item')
         ret = []
         p = item.get('shelters_ids', [])
+        print('p', p)
         for x in p:
-            ret.append(get_shelter_by_id(x))
+            c = get_shelter_by_id(x)
+            print('c', c)
+            ret.append(c)
+        print('get my', ret)
         return ret
     else:
         return []

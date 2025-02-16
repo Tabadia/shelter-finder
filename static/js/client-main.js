@@ -1,12 +1,11 @@
-async function fetchMyShelters(owner_id) {
+async function fetchMyShelters(owner_username) {
     try {
-        const response = await fetch(`/shelters/owner/${owner_id}`);
+        const response = await fetch(`/shelters/owner/${owner_username}`);
         if (!response.ok) {
             throw new Error(`HTTP error! Status: ${response.status}`);
         }
         const data = await response.json();
             console.log("shelters:", data);
-        updateShelters(data);  
         return data;
     } catch (error) {
       console.error("Error fetching location:", error);
@@ -16,20 +15,21 @@ async function fetchMyShelters(owner_id) {
 
 document.addEventListener("DOMContentLoaded", async function () {
     console.log("DOM loaded");
-    const shelters = await fetchMyShelters(1231234);
+    let shelters = await fetchMyShelters('joe');
     console.log(shelters);
     
-    const shelterContainer = document.getElementById("shelterContainer");
+    let shelterContainer = document.getElementById("shelterContainer");
 
     function displayShelters(filter) {
         shelterContainer.innerHTML = "";
         shelters = Object.values(shelters);
         console.log(shelters);
-        shelters.filter(shelter => filter === 'All' || shelter.type === filter)
-            .sort((a, b) => parseFloat(a.distance) - parseFloat(b.distance))
+        shelters
+        // .filter(shelter => filter === 'All' || shelter.type === filter)
+            // .sort((a, b) => parseFloat(a.distance) - parseFloat(b.distance))
             .forEach(shelter => {
-                shelter = shelter[0];
-                console.log(shelter.type);
+                // shelter = shelter[0];
+                // console.log(shelter.type);
                 const shelterBox = document.createElement("div");
                 shelterBox.classList.add("shelter-box");
                 shelterBox.innerHTML = `

@@ -17,6 +17,7 @@ class Shelter(BaseModel):
     verif: bool = False
     type: str
     resources: str
+    # time: int
     
 
 class Client(BaseModel):
@@ -24,8 +25,6 @@ class Client(BaseModel):
     username: str
     password: str
     shelters_ids: List[str]
-    lat: float
-    long: float
 
 class User(BaseModel):
     id: int

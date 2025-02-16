@@ -5,10 +5,8 @@ from pydantic import BaseModel
 from fastapi.responses import FileResponse
 from models import Shelter, User, Reservation, ShelterPost, ShelterUpdate, UserUpdate, ReservationUpdate, Location
 from data import shelters, users, reservations
-from distance import geocode, get_radar_time
 from aws import get_all_shelters, get_my_shelters, get_shelter_by_id, post_shelter, get_all_users, post_user, \
     get_all_reservations, get_reservation_by_id, post_reservation
-# from user.distance import reverse_geocode
 
 
 app = FastAPI()
@@ -48,10 +46,10 @@ async def reserve_shelter(shelter_id: int, phone_number: int, num_people: int):
 async def read_shelters():
     return get_all_shelters()
 
-@app.get("/shelters/owner/{owner_id}", response_model=List[Shelter])
-async def read_shelters(owner_id: int):
-    print("in shelters onwer:", owner_id)
-    return get_my_shelters(owner_id)
+@app.get("/shelters/owner/{owner_username}", response_model=List[Shelter])
+async def my_shelters(owner_username: str):
+    print("in shelters onwer:", owner_username)
+    return get_my_shelters(owner_username)
 
 @app.get("/shelters/{shelter_id}", response_model=Shelter)
 async def read_shelter(shelter_id: str):
@@ -138,12 +136,11 @@ async def get_headcount(shelter_id: int):
 
 @app.get("/location/{lat},{lon}")
 async def get_location(lat: float, lon: float):
-    print(lat, lon)
     shelter_data = get_all_shelters()
-
     for s in shelter_data:
-        client_lat, client_lon = geocode(s["address"])
-        distance = get_radar_time()
-    print(shelter_data)
-    return {"shelters": shelter_data}
+        time = get_radar_time(lat, lon, s["address"])
+        s["time"] = time
+    
+    return shelter_data
+    
 

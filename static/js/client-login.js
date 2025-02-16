@@ -14,7 +14,7 @@ function SwitchToSignup() {
 
 async function fetchLogin(username, password) {
     try {
-        const data = await fetch("/api/client/login", {
+        await fetch("/api/client/login/", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -25,30 +25,26 @@ async function fetchLogin(username, password) {
             })
         })
         .then(response => {
-            // if(response.
-            // if (!response.ok) {
-            //     throw new Error(`HTTP error! Status: ${response.status}`);
-            // }
             return response.json();
         })
-        const popup = document.getElementById("popup");
-        console.log('popup', popup);
-
-        switch (data[0]) {
-            case "0":
-                console.log("Login successful");
-                window.location.href = "/client-dashboard";
-                break;
-            case "1":
-                console.log("Login failed");
-                popup.innerHTML = "Login failed, try again";
-                break;
-            default:
-                console.log("User not found");
-                popup.innerHTML = "User not found. Please sign up, or someone else has created an account with this username";
-        }
-
-        
+        .then(data => {
+            console.log('data', data, data['status']);
+            const popup = document.getElementById("popup");
+            
+            switch (data['status']) {
+                case "0":
+                    console.log("Login successful");
+                    window.location.href = "/client-dashboard";
+                    break;
+                case "1":
+                    console.log("Login failed");
+                    popup.innerHTML = "Login failed, try again!";
+                    break;
+                default:
+                    console.log("User not found");
+                    popup.innerHTML = "User not found. Please sign up, or someone else has created an account with this username";
+                }
+        });
     } catch (error) {
       console.error("Error fetching location:", error);
     }

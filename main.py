@@ -138,14 +138,14 @@ async def create_user(user: ClientPost):
 
 @app.post("/api/client/login/")
 async def client_login(clientLogin: ClientLogin):
-    print('debug: ', clientLogin)
+    print('debug:', clientLogin)
     ret = check_client_login(clientLogin)
     if ret == 0:
-       return {"code": "0"} # valid login
+       return {"status": "0"} # valid login
     if ret == 1:
-        return {"code": "1"}, # invalid login
+        return {"status": "1"} # invalid login
     if ret == 2:
-       return {"code": "2"} # user not found
+       return {"status": "2"} # user not found
 
 @app.put("/users/{user_id}", response_model=User)
 async def update_user(user_id: int, user: UserUpdate):

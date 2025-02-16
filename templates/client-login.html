@@ -3,26 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Client Login</title>
+    <title>Login</title>
     <link rel="stylesheet" href="../static/css/client.css">
 </head>
 <body>
-    <div class="container">
-        <h2>Login</h2>
+    <header class="header">
+        <div class="logo-container"> 
+            <img src="../static/images/sheltrlogo.png" alt="" srcset="">
+        </div> 
+    </header>
+    <main>
+    <div class="login-container">
+        <h2>Log In</h2>
         <form id="loginForm">
-            <label for="loginUser">Username:</label>
-            <input type="text" id="loginUser" name="loginUser" required>
-            <label for="loginPass">Password:</label>
-            <input type="password" id="loginPass" name="loginPass" required>
-            <button type="submit">Login</button>
+            <div class="input-group">
+                <input type="text" id="loginUser" required>
+                <label for="loginUser">Username</label>
+            </div>
+
+            <div class="input-group">
+                <input type="password" id="loginPass" required>
+                <label for="loginPass">Password</label>
+            </div>
+
+            <button type="submit">Log In</button>
 
             <p class="signup-text">
-
-                Not a member? <a href="#" onclick="SwitchToSignup()">Sign Up</a></a>
+                Not a member? <a href="client-signup.html">Sign Up</a>
             </p>
-            <div id="popup"></div>
+            <div id="popup" >
         </form>
     </div>
+    <main>
     <script src="../static/js/client-login.js"></script>
 </body>
 </html>

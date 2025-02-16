@@ -6,12 +6,107 @@
     <link rel="icon" type="image/x-icon" href="../static/images/favicon.ico">
     <title>Client Main</title>
     <link rel="stylesheet" href="../static/css/client.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            text-align: center;
+        }
+        header {
+            background-color: #ffffff;
+            padding: 15px 0;
+        }
+        .logo-container img {
+            width: 150px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            color: #333;
+        }
+        #viewQueueButton {
+            background-color: #0056b3;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        #viewQueueButton:hover {
+            background-color: #003d82;
+        }
+        #queueContainer {
+            margin-top: 20px;
+            padding: 15px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            display: none;
+        }
+        .columns {
+            display: flex;
+            justify-content: space-around;
+        }
+        .column {
+            width: 45%;
+        }
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+        li {
+            background: #e9ecef;
+            margin: 5px 0;
+            padding: 10px;
+            border-radius: 5px;
+        }
+    </style>
 </head>
 <body>
-    <div class="content-container">
+    <header>
+        <div class="logo-container">
+            <a href="client-dashboard.html">
+                <img src="../static/images/sheltrlogo.png" alt="Sheltr Logo">
+            </a>
+        </div>
+    </header>
+    <div class="container">
         <h2>My Shelters</h2>
-        <div id="shelterContainer" class="shelter-container"></div>
+        <button id="viewQueueButton" onclick="toggleQueue()">View Queue</button>
+        
+        <div id="queueContainer">
+            <div class="columns">
+                <div class="column">
+                    <h3>Queue</h3>
+                    <ul id="queueList"></ul>
+                </div>
+                <div class="column">
+                    <h3>Checked In</h3>
+                    <ul id="checkedInList"></ul>
+                </div>
+            </div>
+        </div>
     </div>
-    <script src="../static/js/client-main.js"></script>
+    
+    <script>
+        function toggleQueue() {
+            const queueContainer = document.getElementById('queueContainer');
+            if (queueContainer.style.display === 'none' || queueContainer.style.display === '') {
+                queueContainer.style.display = 'block';
+            } else {
+                queueContainer.style.display = 'none';
+            }
+        }
+    </script>
 </body>
 </html>

@@ -65,7 +65,7 @@ function updateShelters(shelters) {
                         <div class="shelter-buttons">
                             <button class="more-info" 
                             onclick="showDetails(
-                                '${shelter.name}' ${shelter.verif ? '<i class=\"fa-regular fa-circle-check verified\"></i>' : ''}', 
+                                '${shelter.name}', 
                                 '${shelter.time}', 
                                 '${shelter.capacity - shelter.curr_cap}', 
                                 '${shelter.address}', 

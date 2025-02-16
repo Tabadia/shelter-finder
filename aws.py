@@ -38,14 +38,12 @@ def get_all_shelters():
 
 def get_my_shelters(owner_username: str):
     response = client_table.get_item(Key={'username': owner_username})
-    print('cc', response)
     item = response.get('Item', {})
     if item:
         ret = []
         p = item.get('shelters_ids', [])
         for x in p:
             c = get_shelter_by_id(x)
-            print('c', c)
             ret.append(c)
         return ret
     else:
@@ -61,7 +59,6 @@ def verify(s: ShelterPost):
         verified_shelters = set(json.load(file)["shelters"])
 
     if s.name in verified_shelters:
-        print("changed verification")
         return True
 
     else:
@@ -72,8 +69,8 @@ def post_shelter(shelter: ShelterPost):
     shelter.verif = verify(shelter)
     shelter.summary = gen_summary(shelter.name, shelter.queue, shelter.curr_cap, shelter.capacity, shelter.resources, shelter.type)
     
-    # owner_username = shelter.owner_username
-    owner_username = 'bobjoe'
+    owner_username = shelter.owner_username
+    # owner_username = 'bobjoe'
     del shelter.owner_username
     # print('shelter', shelter)
     shelter_table.put_item(Item=shelter.dict())
@@ -88,7 +85,6 @@ def post_shelter(shelter: ShelterPost):
     #     ExpressionAttributeNames={'#shelter_id': 'ShelterID'},
     #     ExpressionAttributeValues={':shelter_id': shelter.ShelterID}
     # )
-    print('user', user)
     return shelter
 
 def update_shelter(shelter):
@@ -118,9 +114,13 @@ def get_user_by_username(username):
     return response.get('Item', {})
 
 def post_user(user: ClientPost):
-    user.id = str(uuid.uuid4())
-    client_table.put_item(Item=user.dict())
-    return user
+    check_user = get_user_by_username(user.username)
+    if check_user:
+        return 1 # user already exists
+    else:
+        user.id = str(uuid.uuid4())
+        client_table.put_item(Item=user.dict())
+        return 0 # user created
 
 def check_client_login(user: ClientLogin):
     response = client_table.get_item(Key={'username': user.username})  

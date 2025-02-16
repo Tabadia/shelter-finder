@@ -58,13 +58,20 @@ def add_to_queue(shelter_id, phone_number, num_people, name):
     if shelter.curr_cap == shelter.capacity:
         raise HTTPException(status_code=400, detailE="Shelter is full")
     shelter.summary = gen_summary(shelter.name, shelter.queue, shelter.curr_cap, shelter.capacity, shelter.resources, shelter.type)
-    print(update_shelter(shelter))
-    print(queue_count(shelter))
-    return {"message": "Added to queue successfully"}
+    #print(shelter)
+    #print(update_shelter(shelter))
+    #print(queue_count(shelter))
+    return {"message": "Added to queue successfully",
+    "count": queue_count(shelter)
+    }
 
 def queue_count(shelter):
-    return len(shelter.queue)
+    count = 0
+    print(shelter.queue)
+    for s in shelter.queue:
+        count += s.num_people
 
+    return count
 
 # should be ran on frontend clientside
 def check_in(shelter, phone_number, num_people):
@@ -92,7 +99,6 @@ async def read_shelters():
 
 @app.get("/shelters/owner/{owner_username}", response_model=List[Shelter])
 async def my_shelters(owner_username: str):
-    print("in shelters onwer:", owner_username)
     return get_my_shelters(owner_username)
 
 @app.get("/shelters/{shelter_id}", response_model=Shelter)
@@ -134,14 +140,17 @@ async def read_users():
 #         raise HTTPException(status_code=404, detail="User not found")
 #     return ret
 
-@app.post("/users/", response_model=Client)
+@app.post("/api/client/signup")
 async def create_user(user: ClientPost):
-    return post_user(user)
+    ret = post_user(user)
+    if ret == 0:
+        return {"status": "0"} # user created
+    else:
+        return {"status": "1"} # user already exists
 
 
 @app.post("/api/client/login/")
 async def client_login(clientLogin: ClientLogin):
-    print('debug:', clientLogin)
     ret = check_client_login(clientLogin)
     if ret == 0:
        return {"status": "0"} # valid login

@@ -12,9 +12,9 @@ function SwitchToSignup() {
 }
 
 
-async function fetchLogin(username, password) {
+async function fetchSignup(username, password) {
     try {
-        await fetch("/api/client/login/", {
+        await fetch("/api/client/signup/", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -33,14 +33,14 @@ async function fetchLogin(username, password) {
             
             switch (data['status']) {
                 case "0":
-                    console.log("Login successful");
+                    console.log("Login created");
                     localStorage.setItem('username', username);
                     window.location.href = "/client-dashboard";
                     break;
                 default:
                     console.log("Login failed");
                     errorMessage.style.display = "block"; // Show error message
-                    errorMessage.textContent = "Login failed, try again!";
+                    errorMessage.textContent = "Account already exists!";
                 }
         });
     } catch (error) {
@@ -52,12 +52,12 @@ document.addEventListener("DOMContentLoaded", function () {
     console.log("DOM loaded");
 
     // Add event listener to the form
-    document.getElementById('loginForm').addEventListener('submit', async function(event) {
+    document.getElementById('signupForm').addEventListener('submit', async function(event) {
         event.preventDefault(); // Prevent default form submission behavior
 
-        const username = document.getElementById('loginUser').value;
-        const password = document.getElementById('loginPass').value;
+        const username = document.getElementById('signupUser').value;
+        const password = document.getElementById('signupPass').value;
 
-        await fetchLogin(username, password);
+        await fetchSignup(username, password);
     });
 });

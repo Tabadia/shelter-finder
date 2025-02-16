@@ -78,17 +78,17 @@ function updateShelters(shelters) {
                         <div class="shelter-info">
                             <input type="hidden" id="shelterID" value="${shelter.ShelterID}">
                             <h3 class="shelter-name">${shelter.name} ${shelter.verif ? '<span class="verified-badge">✔</span>' : ''}</h3>
-                            <p><strong>Distance:</strong> ${shelter.time} minutes</p>
-                            <p><strong>People:</strong> ${shelter.people}</p>
-                            <p><strong>Address:</strong> ${shelter.address}</p>
-                            <p><strong>Description:</strong> ${shelter.description}</p>
-                            <p><strong>Type:</strong> ${shelter.type}</p> 
+                            <p><strong><i class="fa-solid fa-person-walking-arrow-right"></i>  </i>  Distance:</strong> ${shelter.time} minutes</p>
+                            <p><strong><i class="fa-solid fa-people-group"></i>  Capacity:</strong> ${shelter.capacity - shelter.curr_cap}</p>
+                            <p><strong><i class="fa-solid fa-location-dot"></i>  Address:</strong> ${shelter.address}</p>
+                            <p><strong><i class="fa-solid fa-book"></i>  Description:</strong> ${shelter.description}</p>
+                            <p><strong><i class="fa-solid fa-bookmark"></i>  Type:</strong> ${shelter.type}</p> 
                             <div class="shelter-buttons">
                                 <button class="more-info" 
                                 onclick="showDetails(
-                                    '${shelter.name}', 
+                                    '${shelter.name} ${shelter.verif ? '✔' : ''}', 
                                     '${shelter.time}', 
-                                    '${shelter.people}', 
+                                    '${shelter.capacity - shelter.curr_cap}', 
                                     '${shelter.address}', 
                                     '${shelter.description}', 
                                     '${shelter.resources}', 
@@ -129,6 +129,7 @@ async function fetchLocation(lat, lon) {
         alert("Error fetching location. Please enable location services.");
     }
   }
+
 
 // Example: Get user's location and fetch the address
 document.addEventListener("DOMContentLoaded", function () {
@@ -185,6 +186,7 @@ function submitRSVP(event) {
     })
     .then(data => {
         console.log('Reservation successful:', data);
+        console.log("People reserved:", data.count); // DATA.COUNT IS THE TOTAL PEOPLE RESERVED RN
         alert('Reservation successful!');
     })
     .catch(error => {
@@ -221,19 +223,19 @@ function showDetails(name, distance, people, address, description, resources, ty
     let iconHTML = "";
     switch (type) {
         case "hospital":
-            iconHTML = "🏥"; // ✅ Hospital Icon
+            iconHTML = "<i class=\"fa-solid fa-hospital\"></i>"; 
             break;
         case "school":
-            iconHTML = "🏫"; // ✅ School Icon
+            iconHTML = "🏫"; 
             break;
         case "home":
-            iconHTML = "🏠"; // ✅ Home Icon
+            iconHTML = "🏠"; 
             break;
         case "homeless shelter":
-            iconHTML = "🛌"; // ✅ Shelter Icon
+            iconHTML = "🛌"; 
             break;
         default:
-            iconHTML = "❓"; // ✅ Default/Fallback Icon
+            iconHTML = "❓"; 
             console.error(`Unknown shelter type: '${type}'`);
             break;
     }

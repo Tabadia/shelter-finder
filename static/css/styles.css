@@ -9,29 +9,29 @@ body {
 
 /* Header Styling */
 .header {
-    background: #d9d9d9; 
     width: 100%;
     display: flex;
     justify-content: space-between;
+    justify-content: flex-start; 
     align-items: center;
     padding: 15px 20px;
-    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
     box-sizing: border-box;
 }
 
-/* Ensure the logo is visible */
 .logo-container {
     display: flex;
     align-items: center;
-    margin-left: 10px; 
 }
 
 .logo-container img {
-    height: 50px; /* Adjust size */
-    width: auto;
-    display: block;
+    max-width: 150px; 
+    height: auto;
 }
 
+
+.client-switch {
+    margin-left: auto; 
+}
 .client-switch button {
     background-color: #d9534f;
     color: white;

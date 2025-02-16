@@ -91,7 +91,7 @@ document.getElementById('addShelterForm').addEventListener('submit', function(ev
     .then(response => response.json())
     .then(data => {
         console.log('Shelter added:', data);
-        // window.location.href = '/'; // Redirect back to shelter list
+        window.location.reload(); 
     })
     .catch(error => console.error('Error adding shelter:', error));
 });

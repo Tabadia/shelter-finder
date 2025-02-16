@@ -87,7 +87,7 @@ function updateShelters(shelters) {
         });
         
         if (shelterContainer.innerHTML === "") {
-                shelterContainer.innerHTML = "<p style='color: gray; font-size: 18px;'>No shelters available.</p>";
+            shelterContainer.innerHTML = "<p style='color: gray; font-size: 18px;'>No sheltrs available.</p>";
         }
     }
 

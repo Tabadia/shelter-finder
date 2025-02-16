@@ -109,6 +109,9 @@ document.addEventListener("DOMContentLoaded", async function () {
                 `;
                 shelterContainer.appendChild(shelterBox);
             });
+        if (shelterContainer.innerHTML === "") {
+            shelterContainer.innerHTML = "<p style='color: gray; font-size: 18px;'>No sheltrs available.</p>";
+        }
         console.log(shelterContainer);
     }
     displayShelters();

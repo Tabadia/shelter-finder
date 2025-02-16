@@ -12,50 +12,63 @@ async function fetchMyShelters(owner_username) {
     }
 }
 
+function addShelter() {
+    form = document.getElementById("addShelterForm");
+    form.style.display = "block";
+    btn = document.getElementById("addShelterButton");
+    btn.style.display = "none";
+}
 
 document.addEventListener("DOMContentLoaded", async function () {
     console.log("DOM loaded");
-    // let shelters = await fetchMyShelters('joe'); TODO: update w/ the current user
-    // console.log(shelters);
+    const username = localStorage.getItem("username");
+    let shelters = await fetchMyShelters(username); //TODO: update w/ the current user
+    console.log(shelters);
     
     let shelterContainer = document.getElementById("shelterContainer");
 
-    function displayShelters(filter) {
+    function displayShelters() {
         shelterContainer.innerHTML = "";
         shelters = Object.values(shelters);
         console.log(shelters);
         shelters
-        // .filter(shelter => filter === 'All' || shelter.type === filter)
-            // .sort((a, b) => parseFloat(a.distance) - parseFloat(b.distance))
             .forEach(shelter => {
-                // shelter = shelter[0];
-                // console.log(shelter.type);
+                console.log(shelter);
                 const shelterBox = document.createElement("div");
                 shelterBox.classList.add("shelter-box");
                 shelterBox.innerHTML = `
                     <div class="shelter-content">
                         <div class="shelter-info">
-                            <h3>${shelter.name}</h3>
-                            <p><strong>Distance:</strong> ${shelter.distance}</p>
+                            <input type="hidden" id="shelterID" value="${shelter.ShelterID}">
+                            <h3 class="shelter-name">${shelter.name} ${shelter.verif ? '<span class="verified-badge">✔</span>' : ''}</h3>
+                            <p><strong>Distance:</strong> ${shelter.time} minutes</p>
                             <p><strong>People:</strong> ${shelter.people}</p>
                             <p><strong>Address:</strong> ${shelter.address}</p>
                             <p><strong>Description:</strong> ${shelter.description}</p>
-                            ${shelter.verif ? '<span class="verified-badge">Verified</span>' : ''}
-                            <button class="more-info" 
-                            onclick="showDetails('${shelter.name}', '${shelter.distance}', '${shelter.people}', '${shelter.address}', '${shelter.description}', '${shelter.resources}')">
-                            More Info
-                            </button>
-                            <button class="rsvp" onclick="rsvpPopup()">Reserve</button>
+                            <p><strong>Type:</strong> ${shelter.type}</p> 
+                            <div class="shelter-buttons">
+                                <button class="more-info" 
+                                onclick="showDetails(
+                                    '${shelter.name}', 
+                                    '${shelter.time}', 
+                                    '${shelter.people}', 
+                                    '${shelter.address}', 
+                                    '${shelter.description}', 
+                                    '${shelter.resources}', 
+                                    '${shelter.type}'
+                                )">
+                                More Info
+                                </button>
+                                <button class="rsvp" onclick="rsvpPopup()">Reserve</button>
+                            </div>
                         </div>
                         <div class="shelter-image">
-                        <img src="../static/images/${shelter.image}" alt="${shelter.type}">  
+                            <img src="../static/images/${shelter.image}" alt="">
                         </div>
                     </div>
                 `;
                 shelterContainer.appendChild(shelterBox);
             });
     }
-
-    window.filterShelters = displayShelters;
-    displayShelters('All');
+    displayShelters();
 });

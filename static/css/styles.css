@@ -4,16 +4,40 @@ body {
     margin: 0;
     padding: 0;
     text-align: center;
-    background-color: #ffffff;
+    background-color: #f4f4f4;
 }
 
 /* Adjust header layout */
-header {
+.header {
+    background: #FF6961; /* Keep the existing red background */
+    width: 100%;
+    max-width: 1200px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 15px 20px; 
-    position: relative;
+    padding: 15px 20px;
+    border-bottom: 2px solid #ddd; /* Light gray divider */
+}
+
+.top-bar {
+    background-color: #f7f3e9; /* Light beige similar to SCU */
+    padding: 10px 0;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+.client-switch button {
+    background-color: #d9534f;
+    color: white;
+    padding: 8px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.client-switch button:hover {
+    background-color: #c9302c;
 }
 
 .logo-container img {

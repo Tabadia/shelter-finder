@@ -34,15 +34,15 @@ async function fetchLogin(username, password) {
             switch (data['status']) {
                 case "0":
                     console.log("Login successful");
+                    localStorage.setItem('username', username);
+                    // let storedValue = localStorage.getItem('username');
+                    // console.log('storedValue', storedValue);
                     window.location.href = "/client-dashboard";
                     break;
-                case "1":
-                    console.log("Login failed");
-                    popup.innerHTML = "Login failed, try again!";
-                    break;
                 default:
-                    console.log("User not found");
-                    popup.innerHTML = "User not found. Please sign up, or someone else has created an account with this username";
+                    console.log("Login failed");
+                    errorMessage.style.display = "block"; // Show error message
+                    errorMessage.textContent = "Login failed, try again!";
                 }
         });
     } catch (error) {

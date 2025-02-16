@@ -56,15 +56,13 @@ def add_to_queue(shelter_id, phone_number, num_people, name):
         check_in=False
     )
     shelter_data = get_shelter_by_id(shelter_id)
-    print(shelter_data)
     shelter = Shelter(**shelter_data)
     shelter.queue.append(reservation)
     # move to where user is checked in
-    if shelter.curr_cap == 0:
+    if shelter.curr_cap == shelter.capacity:
         raise HTTPException(status_code=400, detailE="Shelter is full")
-    shelter.curr_cap = shelter.curr_cap - 1
     shelter.summary = gen_summary(shelter.name, shelter.queue, shelter.curr_cap, shelter.capacity, shelter.resources, shelter.type)
-    print(update_shelter(shelter.dict()))
+    print(update_shelter(shelter))
     return {"message": "Added to queue successfully"}
 
 # def separate_queue(shelter, phone_number):
@@ -83,7 +81,7 @@ def check_in(shelter, phone_number, num_people):
 
 @app.post("/reserve")
 async def reserve_shelter(reservation: Reservation):
-    print(reservation.shelter_id, reservation.phone_number, reservation.num_people, reservation.name)
+    #print(reservation.shelter_id, reservation.phone_number, reservation.num_people, reservation.name)
     return add_to_queue(reservation.shelter_id, reservation.phone_number, reservation.num_people, reservation.name)
 
 
@@ -123,6 +121,13 @@ async def delete_shelter(shelter_id: str):
 @app.get("/users/", response_model=List[Client])
 async def read_users():
     return get_all_users()
+
+# @app.get("/users/{username}", response_model=Client)
+# async def get_user_by_username(username: str):
+#     ret = get_user_by_username(username)
+#     if not ret:
+#         raise HTTPException(status_code=404, detail="User not found")
+#     return ret
 
 # @app.get("/users/{user_id}", response_model=User)
 # async def read_user(user_id: int):

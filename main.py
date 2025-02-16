@@ -67,11 +67,11 @@ def queue_count(shelter):
 
     return count
 
-# should be ran on frontend clientside
+
 def check_in(shelter, phone_number, num_people):
     for q in shelter.queue:
         if q["phone_number"] == phone_number:
-            q["check_in"] = True  # Fixed assignment
+            q["check_in"] = True  
             q.curr_cap += num_people
             return {"message": "Check-in successful", "reservation": q}
     return {"error": "Reservation not found"}

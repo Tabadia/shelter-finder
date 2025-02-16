@@ -39,7 +39,8 @@ async function fetchLogin(username, password) {
                     break;
                 default:
                     console.log("Login failed");
-                    errorMessage.style.display = "block"; // Show error message
+                    errorMessage = document.querySelecter('#errorMessage');
+                    errorMessage.style.display = "block"; // show error message
                     errorMessage.textContent = "Login failed, try again!";
                 }
         });
@@ -50,10 +51,8 @@ async function fetchLogin(username, password) {
 
 document.addEventListener("DOMContentLoaded", function () {
     console.log("DOM loaded");
-
-    // Add event listener to the form
     document.getElementById('loginForm').addEventListener('submit', async function(event) {
-        event.preventDefault(); // Prevent default form submission behavior
+        event.preventDefault(); 
 
         const username = document.getElementById('loginUser').value;
         const password = document.getElementById('loginPass').value;

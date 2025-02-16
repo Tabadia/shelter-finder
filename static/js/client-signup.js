@@ -39,6 +39,7 @@ async function fetchSignup(username, password) {
                     break;
                 default:
                     console.log("Login failed");
+                    errorMessage = document.querySelector('#errorMessage');
                     errorMessage.style.display = "block"; 
                     errorMessage.textContent = "Account already exists!";
                 }

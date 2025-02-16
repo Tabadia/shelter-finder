@@ -13,11 +13,9 @@ app = FastAPI()
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
-address = ""
+# address = ""
 
 
-
-# Shelter Endpoints
 @app.get("/")
 async def read_root():
     return FileResponse("templates/index.html")
@@ -38,10 +36,6 @@ async def get_client():
 @app.get("/add-shelter")
 async def get_client():
     return FileResponse("templates/add-shelter.html")
-
-# def add_to_queue(shelter, phone_number, num_people, name):
-
-
 
 
 def add_to_queue(shelter_id, phone_number, num_people, name):
@@ -158,10 +152,6 @@ async def shelter_queue(shelter_id: str):
 async def create_shelter(shelter: ShelterPost):
     return post_shelter(shelter)
 
-# @app.put("/shelters/{shelter_id}", response_model=Shelter)
-# async def update_shelter(shelter_id: str, shelter: ShelterUpdate):
-#     return update_shelter(shelter_id, shelter.dict())
-
 @app.delete("/shelters/{shelter_id}")
 async def delete_shelter(shelter_id: str):
     print(shelter_id)
@@ -169,33 +159,11 @@ async def delete_shelter(shelter_id: str):
     res = find_user_by_shelter_id(shelter_id)
     print(res)
 
-    # # remove shelter_id from user
-    # client = get_user_by_username(owner_username)
-    # if 'shelters_ids' not in client:
-    #     client['shelters_ids'] = []
-    # # user = update_user(owner_username, {'shelters_ids': client['shelters_ids'] + [shelter.ShelterID]})
-    
-    # result2 = update_user(username, update) # delete client.shelter_id
-    # return {"result": result, "result2": result2}
-
 # User Endpoints
 @app.get("/users/", response_model=List[Client])
 async def read_users():
     return get_all_users()
 
-# @app.get("/users/{username}", response_model=Client)
-# async def get_user_by_username(username: str):
-#     ret = get_user_by_username(username)
-#     if not ret:
-#         raise HTTPException(status_code=404, detail="User not found")
-#     return ret
-
-# @app.get("/users/{user_id}", response_model=User)
-# async def read_user(user_id: int):
-#     ret = get_user_by_id(user_id)
-#     if not ret:
-#         raise HTTPException(status_code=404, detail="User not found")
-#     return ret
 
 @app.post("/api/client/signup")
 async def create_user(user: ClientPost):
@@ -225,40 +193,25 @@ async def delete_user(user_id: int):
     delete_user(user_id)
     return {"message": "User deleted successfully"}
 
-"""
-@app.get("/location/{lat},{lon}")
-async def get_location(lat: float, lon: float):
-    shelter_data = get_all_shelters()
-    print("Checkpoint 1: Got all shelter data")
-    for s in shelter_data:
-        print("Beginning of getting times for each shelter")
-        time = get_radar_time(lat, lon, s["address"])
-        print("Checkpoint for when a shelter time was found")
-        s["time"] = time
-        print("Checkpoint for updating the shelter time attribute")
-    
-    print("Last checkpoint")
-    return shelter_data
-"""
 
 @app.get("/location/{lat},{lon}")
 async def get_location(lat: float, lon: float):
     start_time = time.time()
     
     shelter_data = get_all_shelters()
-    print(f"Checkpoint 1: Got all shelter data | Time elapsed: {time.time() - start_time:.2f} seconds")
+    #print(f"Checkpoint 1: Got all shelter data | Time elapsed: {time.time() - start_time:.2f} seconds")
 
     for idx, s in enumerate(shelter_data):
         loop_start_time = time.time()
-        print(f"Beginning of getting times for shelter {idx + 1} | Time elapsed: {time.time() - start_time:.2f} seconds")
+        #print(f"Beginning of getting times for shelter {idx + 1} | Time elapsed: {time.time() - start_time:.2f} seconds")
         
         time_taken = get_travel_time(lat, lon, s["address"])
-        print(f"Checkpoint: Shelter {idx + 1} time found | Time elapsed: {time.time() - start_time:.2f} seconds | Time for this shelter: {time.time() - loop_start_time:.2f} seconds")
+        #print(f"Checkpoint: Shelter {idx + 1} time found | Time elapsed: {time.time() - start_time:.2f} seconds | Time for this shelter: {time.time() - loop_start_time:.2f} seconds")
         
         s["time"] = time_taken
-        print(f"Checkpoint: Shelter {idx + 1} time updated | Time elapsed: {time.time() - start_time:.2f} seconds")
+        #print(f"Checkpoint: Shelter {idx + 1} time updated | Time elapsed: {time.time() - start_time:.2f} seconds")
 
-    print(f"Last checkpoint | Total execution time: {time.time() - start_time:.2f} seconds")
+    #print(f"Last checkpoint | Total execution time: {time.time() - start_time:.2f} seconds")
 
     return shelter_data
     

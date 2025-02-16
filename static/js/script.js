@@ -166,11 +166,11 @@ function submitRSVP(event) {
     .then(data => {
         console.log('Reservation successful:', data);
         console.log("People reserved:", data.count); // DATA.COUNT IS THE TOTAL PEOPLE RESERVED RN
-        alert('Reservation successful!');
+        alert(`${data.message}`);
     })
     .catch(error => {
         console.error('Error making reservation:', error);
-        alert('Error making reservation. Please try again.');
+        alert(`Error making reservation: ${error.message}`);
     });
 }
 
@@ -205,16 +205,16 @@ function showDetails(name, distance, people, address, description, resources, ty
             iconHTML = "<i class=\"fa-solid fa-hospital\"></i>"; 
             break;
         case "school":
-            iconHTML = "🏫"; 
+            iconHTML = "<i class=\"fa-solid fa-school\"></i>"; 
             break;
         case "home":
-            iconHTML = "🏠"; 
+            iconHTML = "<i class=\"fa-solid fa-house\"></i>"; 
             break;
         case "homeless shelter":
-            iconHTML = "🛌"; 
+            iconHTML = "<i class=\"fa-solid fa-bed\"></i>"; 
             break;
         default:
-            iconHTML = "❓"; 
+            iconHTML = "<i class=\"fa-solid fa-question\"></i>"; 
             console.error(`Unknown shelter type: '${type}'`);
             break;
     }

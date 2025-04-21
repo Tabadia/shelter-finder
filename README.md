@@ -1,8 +1,10 @@
-# Sheltr
+# Sheltr (H4H 2025 Winner)
 ### TRY IT OUT: [sheltr.help](sheltr.help)
 <img width="1718" alt="Screenshot 2025-04-20 at 23 13 39" src="https://github.com/user-attachments/assets/657f2f45-16c8-41e6-a1bb-0026b83e4882" />
 
 ### Demo: https://youtu.be/hMOs01PPEKY
+
+### Devpost: https://devpost.com/software/sheltr-w4xtgl
 
 ## Inspiration
 California is known for its frequent natural disasters, especially its wildfires during the latter half of the year. This year, we witnessed the L.A. fires that displaced tens of thousands of Californians. With only about 180 emergency call operators in L.A. County responsible for responding to several thousands of calls, response times can be delayed, which can put strain on emergency services. As natural disasters grow more severe due to climate change, our response must match the urgency. Therefore, we hoped to create an accessible and innovative solution to address this issue.
